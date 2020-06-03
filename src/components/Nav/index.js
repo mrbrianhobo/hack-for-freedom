@@ -220,19 +220,19 @@ function Nav({ history }) {
               onClick={() => history.push("/")}
               active={history.location.pathname === "/"}
             >
-              Dashboard
+              Explore
             </NavItem>
             <NavItem
-              onClick={() => history.push("/activity")}
-              active={history.location.pathname === "/activity"}
+              onClick={() => history.push("/tracks")}
+              active={history.location.pathname === "/tracks"}
             >
-              Activity
+              Tracks
             </NavItem>
             <NavItem
-              onClick={() => history.push("/progress")}
-              active={history.location.pathname === "/progress"}
+              onClick={() => history.push("/profile")}
+              active={history.location.pathname === "/profile"}
             >
-              Progress
+              Profile
             </NavItem>
             <NavItem
               onClick={() => history.push("/faq")}

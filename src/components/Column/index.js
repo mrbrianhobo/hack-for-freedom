@@ -15,6 +15,7 @@ export const AutoColumn = styled.div`
   grid-auto-rows: auto;
   grid-row-gap: ${({ gap }) => gap};
   justify-items: ${({ justify }) => justify && justify};
+  width: ${({ width }) => width && width};
 `
 
 export default Column

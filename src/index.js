@@ -1,21 +1,21 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import ReactGA from 'react-ga'
-import { Web3ReactProvider, createWeb3ReactRoot } from '@web3-react/core'
-import { ethers } from 'ethers'
+import React from "react"
+import ReactDOM from "react-dom"
+import { Web3ReactProvider, createWeb3ReactRoot } from "@web3-react/core"
+import { ethers } from "ethers"
 
-import LocalStorageContextProvider, { Updater as LocalStorageContextUpdater } from './contexts/LocalStorage'
-import ApplicationContextProvider, { Updater as ApplicationContextUpdater } from './contexts/Application'
-import TransactionContextProvider, { Updater as TransactionContextUpdater } from './contexts/Transactions'
-import TokensContextProvider from './contexts/Tokens'
-import BalancesContextProvider from './contexts/Balances'
-import AllowancesContextProvider from './contexts/Allowances'
-import AllBalancesContextProvider from './contexts/AllBalances'
-import App from './pages/App'
-import ThemeProvider, { GlobalStyle } from './theme'
-import './i18n'
+import LocalStorageContextProvider, {
+  Updater as LocalStorageContextUpdater,
+} from "./contexts/LocalStorage"
+import ApplicationContextProvider, {
+  Updater as ApplicationContextUpdater,
+} from "./contexts/Application"
+import App from "./pages/App"
+import ThemeProvider, { GlobalStyle } from "./theme"
+import "./i18n"
+import * as firebase from "firebase/app"
+import "firebase/database"
 
-const Web3ProviderNetwork = createWeb3ReactRoot('NETWORK')
+const Web3ProviderNetwork = createWeb3ReactRoot("NETWORK")
 
 function getLibrary(provider) {
   const library = new ethers.providers.Web3Provider(provider)
@@ -23,27 +23,25 @@ function getLibrary(provider) {
   return library
 }
 
-if (process.env.NODE_ENV === 'production') {
-  ReactGA.initialize('UA-128182339-1')
-} else {
-  ReactGA.initialize('test', { testMode: true })
+const firebaseConfig = {
+  apiKey: "AIzaSyDll6l4BLA5igdSSaAiTofQufyoCI15oaQ",
+  authDomain: "rabbithole-de9b3.firebaseapp.com",
+  databaseURL: "https://rabbithole-de9b3.firebaseio.com",
+  projectId: "rabbithole-de9b3",
+  storageBucket: "rabbithole-de9b3.appspot.com",
+  messagingSenderId: "415030966156",
+  appId: "1:415030966156:web:b5f196c2bf0c0f49d0c8a9",
+  measurementId: "G-G09XBG9LPV",
 }
-ReactGA.pageview(window.location.pathname + window.location.search)
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig)
+}
 
 function ContextProviders({ children }) {
   return (
     <LocalStorageContextProvider>
-      <ApplicationContextProvider>
-        <TransactionContextProvider>
-          <TokensContextProvider>
-            <BalancesContextProvider>
-              <AllBalancesContextProvider>
-                <AllowancesContextProvider>{children}</AllowancesContextProvider>
-              </AllBalancesContextProvider>
-            </BalancesContextProvider>
-          </TokensContextProvider>
-        </TransactionContextProvider>
-      </ApplicationContextProvider>
+      <ApplicationContextProvider>{children}</ApplicationContextProvider>
     </LocalStorageContextProvider>
   )
 }
@@ -53,7 +51,6 @@ function Updaters() {
     <>
       <LocalStorageContextUpdater />
       <ApplicationContextUpdater />
-      <TransactionContextUpdater />
     </>
   )
 }
@@ -72,5 +69,5 @@ ReactDOM.render(
       </ContextProviders>
     </Web3ProviderNetwork>
   </Web3ReactProvider>,
-  document.getElementById('root')
+  document.getElementById("root")
 )

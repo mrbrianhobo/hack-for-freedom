@@ -5,12 +5,16 @@ import React, {
   useMemo,
   useCallback,
   useEffect,
+  useState,
 } from "react"
 
 import { fetchQuests } from "../quests"
 import { useWeb3React, useENSName } from "../hooks"
 import { safeAccess } from "../utils"
 import { getUSDPrice } from "../utils/price"
+
+import * as firebase from "firebase/app"
+import "firebase/database"
 
 const BLOCK_NUMBER = "BLOCK_NUMBER"
 const USD_PRICE = "USD_PRICE"
@@ -139,11 +143,16 @@ export function Updater() {
 
   const ENSName = useENSName(account)
 
-  const globalBlockNumber = useBlockNumber()
   const [
-    ,
+    state,
     { updateBlockNumber, updateUSDPrice, updateQuests },
   ] = useApplicationContext()
+
+  // quests
+  const quests = state?.[QUESTS]
+
+  // the reference to the users status from db
+  const [accountStore, setAccountStore] = useState()
 
   // update usd price
   useEffect(() => {
@@ -162,7 +171,7 @@ export function Updater() {
           }
         })
     }
-  }, [globalBlockNumber, library, chainId, updateUSDPrice])
+  }, [library, chainId, updateUSDPrice])
 
   // update block number
   useEffect(() => {
@@ -202,23 +211,37 @@ export function Updater() {
     })
   }, [ENSName, account, updateQuests])
 
+  // on account change, fetch all quests from firebase and save them in context
+  useEffect(() => {
+    firebase
+      .database()
+      .ref("/users/" + account)
+      .once("value")
+      .then(function(snapshot) {
+        setAccountStore(snapshot?.val())
+      })
+  }, [account])
+
+  useEffect(() => {
+    if (quests) {
+      quests.map((quest, index) => {
+        // if no stored value, add it if not done,  make it redeemable if done
+        if (accountStore?.quests[quest.name] !== quest.progress) {
+          // update the database with current score
+
+          // if done mark as redeemable
+          if (quest.progress >= 100) {
+            let newQuests = quests
+            newQuests[index].redeemable = true
+            updateQuests(newQuests) // update the global quest object with new redemption status
+          }
+        }
+        return true
+      })
+    }
+  }, [account, accountStore, quests, updateQuests])
+
   return null
-}
-
-export function useBlockNumber() {
-  const { chainId } = useWeb3React()
-
-  const [state] = useApplicationContext()
-
-  return safeAccess(state, [BLOCK_NUMBER, chainId])
-}
-
-export function useUSDPrice() {
-  const { chainId } = useWeb3React()
-
-  const [state] = useApplicationContext()
-
-  return safeAccess(state, [USD_PRICE, chainId])
 }
 
 export function useWalletModalOpen() {

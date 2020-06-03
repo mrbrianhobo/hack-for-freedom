@@ -3,12 +3,10 @@ import styled from "styled-components"
 import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom"
 
 import Web3ReactManager from "../components/Web3ReactManager"
-// import { useWeb3React } from "@web3-react/core"
 import Nav from "../components/Nav"
-import AltHome from "../components/AltHome"
-import Progress from "../pages/Progress"
-import ActivityHistory from "../components/ActivityHistory"
-import Rewards from "../components/Rewards"
+import AltHome from "./Home"
+import Tracks from "../pages/Tracks"
+import ProfilePage from "../pages/Profile"
 import FAQ from "../components/Faq"
 
 const AppWrapper = styled.div`
@@ -32,8 +30,6 @@ const BodyWrapper = styled.div`
 `
 
 export default function App() {
-  // const { account } = useWeb3React()
-
   return (
     <>
       <Suspense fallback={null}>
@@ -47,24 +43,23 @@ export default function App() {
                     <Route
                       exact
                       strict
-                      path="/activity"
-                      component={() => <ActivityHistory />}
-                    />
-                    <Route
-                      exact
-                      strict
                       path="/"
                       component={() => <AltHome />}
                     />
                     <Route
                       exact
                       strict
-                      path="/progress"
-                      component={() => <Progress />}
+                      path="/profile"
+                      component={() => <ProfilePage />}
+                    />
+                    <Route
+                      exact
+                      strict
+                      path="/tracks"
+                      component={() => <Tracks />}
                     />
                     <Route exact string path="/faq" component={() => <FAQ />} />
                     <Redirect to="/" />
-                    <Route path="/rewards" component={() => <Rewards />} />
                   </Switch>
                 </Suspense>
               </BrowserRouter>
