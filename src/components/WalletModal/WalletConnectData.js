@@ -1,7 +1,6 @@
-import React from 'react'
-import styled from 'styled-components'
-import QRCode from 'qrcode.react'
-import { useDarkModeManager } from '../../contexts/LocalStorage'
+import React from "react"
+import styled from "styled-components"
+import QRCode from "qrcode.react"
 
 const QRCodeWrapper = styled.div`
   ${({ theme }) => theme.flexColumnNoWrap};
@@ -14,12 +13,16 @@ const QRCodeWrapper = styled.div`
   border: 1px solid ${({ theme }) => theme.placeholderGray};
 `
 
-export default function WalletConnectData({ uri = '', size }) {
-  const [isDark] = useDarkModeManager()
+export default function WalletConnectData({ uri = "", size }) {
   return (
     <QRCodeWrapper>
       {uri && (
-        <QRCode size={size} value={uri} bgColor={isDark ? '#333639' : 'white'} fgColor={isDark ? 'white' : 'black'} />
+        <QRCode
+          size={size}
+          value={uri}
+          bgColor={true ? "#333639" : "white"}
+          fgColor={true ? "white" : "black"}
+        />
       )}
     </QRCodeWrapper>
   )

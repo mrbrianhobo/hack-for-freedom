@@ -8,25 +8,21 @@ import React, {
   useState,
 } from "react"
 
-import { fetchQuests } from "../quests"
-import { useWeb3React, useENSName } from "../hooks"
-import { safeAccess } from "../utils"
-import { getUSDPrice } from "../utils/price"
+import { ALL_QUESTS } from "../quests"
+import { useWeb3React } from "../hooks"
 
 import * as firebase from "firebase/app"
 import "firebase/database"
 
-const BLOCK_NUMBER = "BLOCK_NUMBER"
-const USD_PRICE = "USD_PRICE"
 const WALLET_MODAL_OPEN = "WALLET_MODAL_OPEN"
 const SCORE = "SCORE"
 const QUESTS = "QUESTS"
 
-const UPDATE_BLOCK_NUMBER = "UPDATE_BLOCK_NUMBER"
-const UPDATE_USD_PRICE = "UPDATE_USD_PRICE"
 const TOGGLE_WALLET_MODAL = "TOGGLE_WALLET_MODAL"
 const UPDATE_SCORE = "UPDATE_SCORE"
 const UPDATE_QUESTS = "UPDATE_QUESTS"
+const UPDATE_QUEST_PROGRESS = "UPDATE_QUEST_PROGRESS"
+const UPDATE_QUEST_REDEEMABLE = "UPDATE_QUEST_REDEEMABLE"
 
 const ApplicationContext = createContext()
 
@@ -36,26 +32,6 @@ function useApplicationContext() {
 
 function reducer(state, { type, payload }) {
   switch (type) {
-    case UPDATE_BLOCK_NUMBER: {
-      const { networkId, blockNumber } = payload
-      return {
-        ...state,
-        [BLOCK_NUMBER]: {
-          ...(safeAccess(state, [BLOCK_NUMBER]) || {}),
-          [networkId]: blockNumber,
-        },
-      }
-    }
-    case UPDATE_USD_PRICE: {
-      const { networkId, USDPrice } = payload
-      return {
-        ...state,
-        [USD_PRICE]: {
-          ...(safeAccess(state, [USD_PRICE]) || {}),
-          [networkId]: USDPrice,
-        },
-      }
-    }
     case UPDATE_SCORE: {
       const { score } = payload
       return {
@@ -68,6 +44,32 @@ function reducer(state, { type, payload }) {
       return {
         ...state,
         [QUESTS]: quests,
+      }
+    }
+    case UPDATE_QUEST_PROGRESS: {
+      const { questId, progress } = payload
+      return {
+        ...state,
+        [QUESTS]: {
+          ...state?.QUESTS,
+          [questId]: {
+            ...state?.QUESTS?.[questId],
+            progress,
+          },
+        },
+      }
+    }
+    case UPDATE_QUEST_REDEEMABLE: {
+      const { questId, redeemable } = payload
+      return {
+        ...state,
+        [QUESTS]: {
+          ...state?.QUESTS,
+          [questId]: {
+            ...state?.QUESTS?.[questId],
+            redeemable,
+          },
+        },
       }
     }
     case TOGGLE_WALLET_MODAL: {
@@ -83,20 +85,10 @@ function reducer(state, { type, payload }) {
 
 export default function Provider({ children }) {
   const [state, dispatch] = useReducer(reducer, {
-    [BLOCK_NUMBER]: {},
-    [USD_PRICE]: {},
     [WALLET_MODAL_OPEN]: false,
     [SCORE]: 0,
     [QUESTS]: [],
   })
-
-  const updateBlockNumber = useCallback((networkId, blockNumber) => {
-    dispatch({ type: UPDATE_BLOCK_NUMBER, payload: { networkId, blockNumber } })
-  }, [])
-
-  const updateUSDPrice = useCallback((networkId, USDPrice) => {
-    dispatch({ type: UPDATE_USD_PRICE, payload: { networkId, USDPrice } })
-  }, [])
 
   const toggleWalletModal = useCallback(() => {
     dispatch({ type: TOGGLE_WALLET_MODAL })
@@ -106,8 +98,15 @@ export default function Provider({ children }) {
     dispatch({ type: UPDATE_SCORE, payload: { score } })
   }, [])
 
-  const updateQuests = useCallback((quests) => {
-    dispatch({ type: UPDATE_QUESTS, payload: { quests } })
+  const updateQuestProgress = useCallback((questId, progress) => {
+    dispatch({ type: UPDATE_QUEST_PROGRESS, payload: { questId, progress } })
+  }, [])
+
+  const updateQuestRedeemable = useCallback((questId, redeemable) => {
+    dispatch({
+      type: UPDATE_QUEST_REDEEMABLE,
+      payload: { questId, redeemable },
+    })
   }, [])
 
   return (
@@ -116,20 +115,18 @@ export default function Provider({ children }) {
         () => [
           state,
           {
-            updateBlockNumber,
-            updateUSDPrice,
             toggleWalletModal,
             updateScore,
-            updateQuests,
+            updateQuestProgress,
+            updateQuestRedeemable,
           },
         ],
         [
           state,
-          updateBlockNumber,
-          updateUSDPrice,
           toggleWalletModal,
           updateScore,
-          updateQuests,
+          updateQuestProgress,
+          updateQuestRedeemable,
         ]
       )}
     >
@@ -138,78 +135,21 @@ export default function Provider({ children }) {
   )
 }
 
+/**
+ *  run on load
+ */
 export function Updater() {
-  const { library, chainId, account } = useWeb3React()
-
-  const ENSName = useENSName(account)
+  // account info
+  const { account } = useWeb3React()
+  // const ENSName = useENSName(account)
 
   const [
     state,
-    { updateBlockNumber, updateUSDPrice, updateQuests },
+    { updateQuestProgress, updateQuestRedeemable },
   ] = useApplicationContext()
-
-  // quests
   const quests = state?.[QUESTS]
 
-  // the reference to the users status from db
   const [accountStore, setAccountStore] = useState()
-
-  // update usd price
-  useEffect(() => {
-    if (library && chainId === 1) {
-      let stale = false
-
-      getUSDPrice(library)
-        .then(([price]) => {
-          if (!stale) {
-            updateUSDPrice(chainId, price)
-          }
-        })
-        .catch(() => {
-          if (!stale) {
-            updateUSDPrice(chainId, null)
-          }
-        })
-    }
-  }, [library, chainId, updateUSDPrice])
-
-  // update block number
-  useEffect(() => {
-    if (library) {
-      let stale = false
-
-      function update() {
-        library
-          .getBlockNumber()
-          .then((blockNumber) => {
-            if (!stale) {
-              updateBlockNumber(chainId, blockNumber)
-            }
-          })
-          .catch(() => {
-            if (!stale) {
-              updateBlockNumber(chainId, null)
-            }
-          })
-      }
-
-      update()
-      library.on("block", update)
-
-      return () => {
-        stale = true
-        library.removeListener("block", update)
-      }
-    }
-  }, [chainId, library, updateBlockNumber])
-
-  useEffect(() => {
-    fetchQuests(ENSName, account).then((data) => {
-      if (data) {
-        updateQuests(data)
-      }
-    })
-  }, [ENSName, account, updateQuests])
 
   // on account change, fetch all quests from firebase and save them in context
   useEffect(() => {
@@ -222,24 +162,33 @@ export function Updater() {
       })
   }, [account])
 
+  // loop through all quests, fetch current progress based on account, and update
+  useEffect(() => {
+    if (account) {
+      Object.keys(ALL_QUESTS).map(async (questId) => {
+        let progress = await ALL_QUESTS[questId].fetchProgress(account)
+        updateQuestProgress(questId, progress)
+      })
+    }
+  }, [account, updateQuestProgress])
+
   useEffect(() => {
     if (quests) {
-      quests.map((quest, index) => {
-        // if no stored value, add it if not done,  make it redeemable if done
-        if (accountStore?.quests[quest.name] !== quest.progress) {
-          // update the database with current score
-
-          // if done mark as redeemable
-          if (quest.progress >= 100) {
-            let newQuests = quests
-            newQuests[index].redeemable = true
-            updateQuests(newQuests) // update the global quest object with new redemption status
+      Object.keys(quests).map((questId) => {
+        let quest = quests[questId]
+        // if db doesnt know quest is done, and quest *IS* done, mark it as redeemable
+        if (
+          accountStore?.[ALL_QUESTS[questId].definition.name] !== quest.progress
+        ) {
+          // if done mark as redeemable if havent already
+          if (quest.progress >= 100 && !quest.redeemable) {
+            updateQuestRedeemable(questId, true)
           }
         }
         return true
       })
     }
-  }, [account, accountStore, quests, updateQuests])
+  }, [account, accountStore, quests, updateQuestRedeemable])
 
   return null
 }
@@ -264,9 +213,9 @@ export function useScore() {
   useEffect(() => {
     if (quests) {
       let score = 0
-      quests.map((quest) => {
-        if (quest.progress >= 100) {
-          score += quest.points
+      Object.keys(quests).map((questId) => {
+        if (quests[questId].progress >= 100) {
+          score += ALL_QUESTS[questId].definition.points
         }
         return true
       })
@@ -277,8 +226,7 @@ export function useScore() {
   return state?.[SCORE]
 }
 
-export function useQuests() {
-  const [state] = useApplicationContext()
-
-  return state?.[QUESTS]
+export function useAllQuestData() {
+  const [state, updateQuestRedeemable] = useApplicationContext()
+  return [state?.[QUESTS], updateQuestRedeemable]
 }

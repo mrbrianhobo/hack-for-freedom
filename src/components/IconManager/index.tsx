@@ -15,12 +15,18 @@ export const ICON_OPTIONS = {
   OPEN_SEA: "opensea.jpg",
 }
 
-export default function IconManager({ iconOption, size = "30px" }) {
+export default function IconManager({
+  iconOption,
+  size = 30,
+}: {
+  iconOption: string
+  size?: number
+}) {
   return (
     <Icon
       src={require("../../assets/images/" + iconOption)}
       alt="icon"
-      size={size}
+      size={size.toString() + "px"}
     />
   )
 }

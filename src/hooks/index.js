@@ -1,14 +1,8 @@
-import { useState, useMemo, useCallback, useEffect, useRef } from "react"
+import { useState, useCallback, useEffect, useRef } from "react"
 import { useWeb3React as useWeb3ReactCore } from "@web3-react/core"
 import copy from "copy-to-clipboard"
 
-import ERC20_ABI from "../constants/abis/erc20"
-import {
-  getContract,
-  getFactoryContract,
-  getExchangeContract,
-  isAddress,
-} from "../utils"
+import { isAddress } from "../utils"
 import { injected } from "../connectors"
 
 const Box = require("3box")
@@ -162,78 +156,6 @@ export function useENSName(address) {
   }, [library, address])
 
   return ENSName
-}
-
-// returns null on errors
-export function useContract(address, ABI, withSignerIfPossible = true) {
-  const { library, account } = useWeb3React()
-
-  return useMemo(() => {
-    try {
-      return getContract(
-        address,
-        ABI,
-        library,
-        withSignerIfPossible ? account : undefined
-      )
-    } catch {
-      return null
-    }
-  }, [address, ABI, library, withSignerIfPossible, account])
-}
-
-// returns null on errors
-export function useTokenContract(tokenAddress, withSignerIfPossible = true) {
-  const { library, account } = useWeb3React()
-
-  return useMemo(() => {
-    try {
-      return getContract(
-        tokenAddress,
-        ERC20_ABI,
-        library,
-        withSignerIfPossible ? account : undefined
-      )
-    } catch {
-      return null
-    }
-  }, [tokenAddress, library, withSignerIfPossible, account])
-}
-
-// returns null on errors
-export function useFactoryContract(withSignerIfPossible = true) {
-  const { chainId, library, account } = useWeb3React()
-
-  return useMemo(() => {
-    try {
-      return getFactoryContract(
-        chainId,
-        library,
-        withSignerIfPossible ? account : undefined
-      )
-    } catch {
-      return null
-    }
-  }, [chainId, library, withSignerIfPossible, account])
-}
-
-export function useExchangeContract(
-  exchangeAddress,
-  withSignerIfPossible = true
-) {
-  const { library, account } = useWeb3React()
-
-  return useMemo(() => {
-    try {
-      return getExchangeContract(
-        exchangeAddress,
-        library,
-        withSignerIfPossible ? account : undefined
-      )
-    } catch {
-      return null
-    }
-  }, [exchangeAddress, library, withSignerIfPossible, account])
 }
 
 export function useCopyClipboard(timeout = 500) {

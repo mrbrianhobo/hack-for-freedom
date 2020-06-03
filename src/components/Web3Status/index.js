@@ -11,7 +11,6 @@ import { useENSName } from "../../hooks"
 import WalletModal from "../WalletModal"
 import { useWalletModalToggle } from "../../contexts/Application"
 import { Spinner } from "../../theme"
-import Circle from "../../assets/images/circle.svg"
 import {
   injected,
   walletconnect,
@@ -113,10 +112,6 @@ const NetworkIcon = styled(Activity)`
   margin-right: 0.5rem;
   width: 16px;
   height: 16px;
-`
-
-const SpinnerWrapper = styled(Spinner)`
-  margin: 0 0.25rem 0 0.25rem;
 `
 
 const IconWrapper = styled.div`

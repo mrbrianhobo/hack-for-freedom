@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import styled from "styled-components"
 import { useMedia } from "use-media"
 import Spinner from "../components/Spinner"
-import { useQuests } from "../contexts/Application"
+import { useAllQuestData } from "../contexts/Application"
 
 const Wrapper = styled.div`
   display: grid;
@@ -238,11 +238,7 @@ const Footer = styled.div`
 `
 
 export default function ProfilePage() {
-  const quests = useQuests()
-
-  // const { account } = useWeb3React()
-
-  // const isExtraSmall = useMedia({ maxWidth: "970px" })
+  const [questData] = useAllQuestData()
 
   const isXXSmall = useMedia({ maxWidth: "930px" })
 
@@ -255,7 +251,7 @@ export default function ProfilePage() {
   return (
     <>
       {" "}
-      {quests.length > 0 ? (
+      {questData.length > 0 ? (
         <Wrapper>
           {isXXSmall && (
             <Switcher>
@@ -269,8 +265,8 @@ export default function ProfilePage() {
               <SubHeading>Badges you've earned so far</SubHeading>
             </div>
             <BadgeList>
-              {quests &&
-                quests.map((quest) => {
+              {questData &&
+                questData.map((quest) => {
                   if (quest.progress >= 100) {
                     return (
                       <Badge
@@ -290,8 +286,8 @@ export default function ProfilePage() {
               <SubHeading>Quests you've completed so far</SubHeading>
             </div>
             <div style={{ gridArea: "activities" }}>
-              {quests &&
-                quests.map((quest) => {
+              {questData &&
+                questData.map((quest) => {
                   if (quest.progress >= 100) {
                     return (
                       <Activity key={quest.name}>

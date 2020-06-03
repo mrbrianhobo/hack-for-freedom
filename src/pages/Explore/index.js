@@ -2,7 +2,7 @@ import React from "react"
 import styled from "styled-components"
 import { AutoColumn } from "../../components/Column"
 import { Text } from "rebass"
-import { AutoRow, RowFixed, RowBetween } from "../../components/Row"
+import { RowFixed, RowBetween } from "../../components/Row"
 import IconManager, { ICON_OPTIONS } from "../../components/IconManager"
 import { darken } from "polished"
 
