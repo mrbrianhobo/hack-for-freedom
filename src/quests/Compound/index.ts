@@ -1,7 +1,7 @@
 import { compoundClient } from "../../apollo/client"
 import { COMPOUND_QUERY } from "../../apollo/queries"
 import { QuestObject } from ".."
-import { Track } from "../../constants"
+import { TrackOption } from "../../Tracks"
 
 export const fetchComp101 = async function(account: string): Promise<number> {
   let progress: number = 0
@@ -29,8 +29,8 @@ export const COMPOUND_QUESTS: { [questKey: string]: QuestObject } = {
     // this is the global definition of the quest
     definition: {
       name: "COMP-101",
-      track: Track.COMPOUND,
-      description: "",
+      track: TrackOption.COMPOUND,
+      description: "Supply ETH on compound",
       link: "",
       color: "",
       imageName: "",

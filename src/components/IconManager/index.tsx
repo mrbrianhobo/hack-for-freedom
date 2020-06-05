@@ -22,11 +22,15 @@ export default function IconManager({
   iconOption: string
   size?: number
 }) {
-  return (
-    <Icon
-      src={require("../../assets/images/" + iconOption)}
-      alt="icon"
-      size={size.toString() + "px"}
-    />
-  )
+  if (iconOption) {
+    return (
+      <Icon
+        src={require("../../assets/images/" + iconOption)}
+        alt="icon"
+        size={size.toString() + "px"}
+      />
+    )
+  } else {
+    return <div />
+  }
 }

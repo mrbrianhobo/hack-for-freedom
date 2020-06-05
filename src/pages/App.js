@@ -5,7 +5,7 @@ import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom"
 import Web3ReactManager from "../components/Web3ReactManager"
 import Nav from "../components/Nav"
 import AltHome from "./Home"
-import Tracks from "../pages/Tracks"
+import TrackPage from "./TrackPage"
 import ProfilePage from "../pages/Profile"
 import FAQ from "../components/Faq"
 
@@ -56,7 +56,7 @@ export default function App() {
                       exact
                       strict
                       path="/tracks"
-                      component={() => <Tracks />}
+                      component={() => <TrackPage />}
                     />
                     <Route exact string path="/faq" component={() => <FAQ />} />
                     <Redirect to="/" />

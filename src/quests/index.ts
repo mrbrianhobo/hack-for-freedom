@@ -1,10 +1,11 @@
 import { COMPOUND_QUESTS } from "./Compound"
-import { Track } from "../constants"
+import { TrackOption } from "../Tracks"
+import { UNISWAP_QUESTS } from "./Uniswap"
 
 // requirements for every quest
 export interface QuestDefinition {
   name: string
-  track: Track
+  track: TrackOption
   description: string
   link: string
   color: string
@@ -21,4 +22,15 @@ export interface QuestObject {
 // combine all quests defined in sub folders
 export const ALL_QUESTS: { [questKey: string]: QuestObject } = {
   ...COMPOUND_QUESTS,
+}
+
+export function getTracksFromQuest(track: TrackOption) {
+  switch (track) {
+    case TrackOption.COMPOUND:
+      return COMPOUND_QUESTS
+    case TrackOption.UNISWAP:
+      return UNISWAP_QUESTS
+    default:
+      return COMPOUND_QUESTS
+  }
 }

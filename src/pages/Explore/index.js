@@ -3,7 +3,10 @@ import styled from "styled-components"
 import { AutoColumn } from "../../components/Column"
 import { Text } from "rebass"
 import { RowFixed, RowBetween } from "../../components/Row"
-import IconManager, { ICON_OPTIONS } from "../../components/IconManager"
+import IconManager, {
+  ICON_OPTIONS,
+  ICON_OPTION,
+} from "../../components/IconManager"
 import { darken } from "polished"
 
 const Wrapper = styled.div`

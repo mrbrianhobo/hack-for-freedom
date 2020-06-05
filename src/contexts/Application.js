@@ -170,7 +170,7 @@ export function Updater() {
         updateQuestProgress(questId, progress)
       })
     }
-  }, [account, updateQuestProgress])
+  }, [account, updateQuestProgress, updateQuestRedeemable])
 
   useEffect(() => {
     if (quests) {
@@ -178,9 +178,16 @@ export function Updater() {
         let quest = quests[questId]
         // if db doesnt know quest is done, and quest *IS* done, mark it as redeemable
         if (
-          accountStore?.[ALL_QUESTS[questId].definition.name] !== quest.progress
+          accountStore &&
+          accountStore?.quests?.[ALL_QUESTS[questId].definition.name] !==
+            quest.progress &&
+          quest.redeemable === undefined // only
         ) {
           // if done mark as redeemable if havent already
+          if (quest.progress >= 100 && !quest.redeemable) {
+            updateQuestRedeemable(questId, true)
+          }
+        } else if (!accountStore && quest.redeemable === undefined) {
           if (quest.progress >= 100 && !quest.redeemable) {
             updateQuestRedeemable(questId, true)
           }
@@ -193,18 +200,6 @@ export function Updater() {
   return null
 }
 
-export function useWalletModalOpen() {
-  const [state] = useApplicationContext()
-
-  return state[WALLET_MODAL_OPEN]
-}
-
-export function useWalletModalToggle() {
-  const [, { toggleWalletModal }] = useApplicationContext()
-
-  return toggleWalletModal
-}
-
 export function useScore() {
   const [state, { updateScore }] = useApplicationContext()
 
@@ -214,7 +209,7 @@ export function useScore() {
     if (quests) {
       let score = 0
       Object.keys(quests).map((questId) => {
-        if (quests[questId].progress >= 100) {
+        if (quests[questId].progress >= 100 && !quests[questId].redeemable) {
           score += ALL_QUESTS[questId].definition.points
         }
         return true
@@ -227,6 +222,18 @@ export function useScore() {
 }
 
 export function useAllQuestData() {
-  const [state, updateQuestRedeemable] = useApplicationContext()
+  const [state, { updateQuestRedeemable }] = useApplicationContext()
   return [state?.[QUESTS], updateQuestRedeemable]
+}
+
+export function useWalletModalOpen() {
+  const [state] = useApplicationContext()
+
+  return state[WALLET_MODAL_OPEN]
+}
+
+export function useWalletModalToggle() {
+  const [, { toggleWalletModal }] = useApplicationContext()
+
+  return toggleWalletModal
 }

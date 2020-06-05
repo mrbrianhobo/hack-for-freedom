@@ -1,23 +1,5 @@
 import { injected, walletconnect, walletlink, fortmatic } from "../connectors"
 
-// possible tracks a quest could be under
-export enum Track {
-  COMPOUND,
-  UNISWAP,
-}
-
-export const ALL_TRACKS = [
-  {
-    track: Track.COMPOUND,
-    name: "Compound",
-    description:
-      "A decentralized lending and borrowing protocol and liquidity network for digital assets.",
-    imageName: "compound.png",
-    primaryColor: "#C9FFE6",
-    secondaryColor: "#2B5944",
-  },
-]
-
 export const SUPPORTED_WALLETS = {
   INJECTED: {
     connector: injected,
