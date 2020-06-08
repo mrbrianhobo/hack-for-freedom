@@ -4,14 +4,15 @@ import { useWeb3React } from "@web3-react/core"
 import Web3Status from "../Web3Status"
 import useMedia from "use-media"
 import { useScore } from "../../contexts/Application"
+import { LEVELS, MAX_LEVEL } from "../../constants"
 import { withRouter } from "react-router-dom"
 import { Text } from "rebass"
 import { Hover } from "../../theme/components"
 
 const NavWrapper = styled.div`
   display: flex;
-  width: 100%;
-  height: 55px;
+  width: 900%;
+  height: 60px;
   align-items: center;
 
   @media (max-width: 970px) {
@@ -21,14 +22,19 @@ const NavWrapper = styled.div`
 
 const BrandWrapper = styled.div`
   display: flex;
-  width: 22%;
+  width: 30%;
   justify-content: flex-start;
   align-items: center;
-  margin-left: 35px;
+  padding-left: 40px;
   font-size: 45px;
+
+  @media (max-width: 580px) {
+    padding-left: 16px;
+  }
 `
 
 const Logo = styled.img`
+  display: flex;
   width: 150px;
 `
 
@@ -64,10 +70,10 @@ const NavItem = styled.div`
 
 const AccountWrapper = styled.div`
   display: flex;
-  margin-left: 30px;
-  width: 25%;
+  padding-right: 40px;
+  width: 30%;
   align-items: center;
-  justify-content: space-around;
+  justify-content: flex-end;
 
   @media (max-width: 580px) {
     width: 100%;
@@ -106,6 +112,93 @@ const Score = styled.div`
   @media (max-width: 580px) {
     margin-right: 25px;
   }
+`
+
+const LevelDiv = ({ className, score }) => {
+  const level = getLevelFromScore(score);
+  const currentXP = level < MAX_LEVEL ? score - LEVELS[level] : score;
+  const XPtoNextLevel = level < MAX_LEVEL ? LEVELS[level + 1] - LEVELS[level] : 0;
+  return (
+    <div className={className}>
+      <LevelInfo level={level} />
+      <ProgressBar xp={currentXP} xpNext={XPtoNextLevel} />
+      <ProgressXP xp={currentXP} xpNext={XPtoNextLevel} />
+    </div>
+  )
+}
+
+const Level = styled(LevelDiv)`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: Inter;
+  padding: 16px;
+
+  @media (max-width: 970px) {
+    display: none;
+  }
+`
+
+const LevelInfoDiv = ({ className, level }) => {
+  return <div className={className}>Level {level}</div>
+}
+
+const LevelInfo = styled(LevelInfoDiv)`
+  font-family: Inter;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 13px;
+  line-height: 24px;
+  letter-spacing: 2px;
+`
+
+const FilledBar = styled.div`
+  position: absolute;
+  height: 10px;
+  background: #8DFBC9;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 50px;
+  margin: 0.5px;
+`
+
+const XPBar = styled.div`
+  position: relative;
+  width: 150px;
+  height: 10px;
+  background: #242424;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 50px;
+  margin: 0.5px;
+`
+
+const ProgressBar = ({ xp, xpNext }) => {
+  // xp / relative level xp * 150 (width of xp bar)
+  const fillWidth = xpNext > 0 ? xp / xpNext * 150 : 150;
+  return (
+    <XPBar>
+      <FilledBar style={{width: fillWidth }} />
+    </XPBar>
+  )
+}
+
+const ProgressXPDiv = ({ className, xp, xpNext }) => {
+  return (
+    xpNext > 0 
+      ? <div className={className}>{xp}/{xpNext} XP</div>
+      : <div className={className}>{xp} XP</div>
+  )
+}
+
+const ProgressXP = styled(ProgressXPDiv)`
+  font-family: Inter;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 10px;
+  line-height: 24px;
+  letter-spacing: 2px;
+  color: #8DFBC9;
+  opacity: 0.5;
 `
 
 const Sidebar = styled.div`
@@ -176,6 +269,14 @@ const SidebarScore = styled.div`
   }
 `
 
+const SidebarLevel = styled(Level)`
+  padding: 0px;
+
+  @media (max-width: 970px) {
+    display: flex;
+  }
+`
+
 const SidebarLoginWrapper = styled.div`
   max-width: 200px;
   height: 35px;
@@ -187,6 +288,17 @@ const CloseIcon = styled.div`
   top: 20px;
   right: 20px;
 `
+
+const getLevelFromScore = (score) => {
+  let currentLvl = 1;
+  const levels = Object.keys(LEVELS);
+  for (const level of levels) {
+    if (score >= LEVELS[level]) {
+      currentLvl = level
+    }
+  }
+  return parseInt(currentLvl);
+}
 
 function Nav({ history }) {
   const [sidebarOpen, toggleSidebarOpen] = useState(false)
@@ -249,7 +361,7 @@ function Nav({ history }) {
               <Web3Status />
             </LoginWrapper>
           )}
-          {account && <Score account={account}>{score} XP</Score>}
+          {account && <Level score={score} />}
           {isExtraSmall && (
             <Hover
               onClick={() => {
@@ -273,7 +385,7 @@ function Nav({ history }) {
             />
           </a>
         </SidebarBrandWrapper>
-        {account && <SidebarScore>{score} XP</SidebarScore>}
+        {account && <SidebarLevel score={score} />}
         <SidebarList>
           <SidebarItem
             onClick={() => {
