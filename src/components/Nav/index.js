@@ -11,7 +11,7 @@ import { Hover } from "../../theme/components"
 
 const NavWrapper = styled.div`
   display: flex;
-  width: 900%;
+  width: 100%;
   height: 60px;
   align-items: center;
 
