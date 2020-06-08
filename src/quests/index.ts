@@ -22,9 +22,10 @@ export interface QuestObject {
 // combine all quests defined in sub folders
 export const ALL_QUESTS: { [questKey: string]: QuestObject } = {
   ...COMPOUND_QUESTS,
+  ...UNISWAP_QUESTS,
 }
 
-export function getTracksFromQuest(track: TrackOption) {
+export function getQuestsFromTrack(track: TrackOption) {
   switch (track) {
     case TrackOption.COMPOUND:
       return COMPOUND_QUESTS

@@ -98,6 +98,8 @@ const theme = (darkMode) => ({
   //specific
   textHover: darkMode ? theme.uniswapPink : theme.doveGray,
 
+  primary1: "#6955F6",
+
   // media queries
   mediaWidth: mediaWidthTemplates,
   // css snippets

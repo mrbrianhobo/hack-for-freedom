@@ -5,7 +5,6 @@ import React, {
   useMemo,
   useCallback,
   useEffect,
-  useState,
 } from "react"
 
 import { ALL_QUESTS } from "../quests"
@@ -20,6 +19,7 @@ const QUESTS = "QUESTS"
 
 const TOGGLE_WALLET_MODAL = "TOGGLE_WALLET_MODAL"
 const UPDATE_SCORE = "UPDATE_SCORE"
+const UPDATE_DB_DATA = "UPDATE_DB_DATA"
 const UPDATE_QUESTS = "UPDATE_QUESTS"
 const UPDATE_QUEST_PROGRESS = "UPDATE_QUEST_PROGRESS"
 const UPDATE_QUEST_REDEEMABLE = "UPDATE_QUEST_REDEEMABLE"
@@ -37,6 +37,13 @@ function reducer(state, { type, payload }) {
       return {
         ...state,
         [SCORE]: score,
+      }
+    }
+    case UPDATE_DB_DATA: {
+      const { accountStore } = payload
+      return {
+        ...state,
+        accountStore,
       }
     }
     case UPDATE_QUESTS: {
@@ -98,6 +105,10 @@ export default function Provider({ children }) {
     dispatch({ type: UPDATE_SCORE, payload: { score } })
   }, [])
 
+  const updateAccountStore = useCallback((accountStore) => {
+    dispatch({ type: UPDATE_DB_DATA, payload: { accountStore } })
+  }, [])
+
   const updateQuestProgress = useCallback((questId, progress) => {
     dispatch({ type: UPDATE_QUEST_PROGRESS, payload: { questId, progress } })
   }, [])
@@ -119,6 +130,7 @@ export default function Provider({ children }) {
             updateScore,
             updateQuestProgress,
             updateQuestRedeemable,
+            updateAccountStore,
           },
         ],
         [
@@ -127,6 +139,7 @@ export default function Provider({ children }) {
           updateScore,
           updateQuestProgress,
           updateQuestRedeemable,
+          updateAccountStore,
         ]
       )}
     >
@@ -141,26 +154,27 @@ export default function Provider({ children }) {
 export function Updater() {
   // account info
   const { account } = useWeb3React()
-  // const ENSName = useENSName(account)
 
   const [
     state,
-    { updateQuestProgress, updateQuestRedeemable },
+    { updateQuestProgress, updateQuestRedeemable, updateAccountStore },
   ] = useApplicationContext()
   const quests = state?.[QUESTS]
 
-  const [accountStore, setAccountStore] = useState()
+  const accountStore = state?.accountStore
+
+  const userDBData = account && accountStore?.[account]
 
   // on account change, fetch all quests from firebase and save them in context
   useEffect(() => {
     firebase
       .database()
-      .ref("/users/" + account)
+      .ref("/users/")
       .once("value")
       .then(function(snapshot) {
-        setAccountStore(snapshot?.val())
+        updateAccountStore(snapshot?.val())
       })
-  }, [account])
+  }, [account, updateAccountStore])
 
   // loop through all quests, fetch current progress based on account, and update
   useEffect(() => {
@@ -172,30 +186,24 @@ export function Updater() {
     }
   }, [account, updateQuestProgress, updateQuestRedeemable])
 
+  // check for which quests are redeemable
   useEffect(() => {
-    if (quests) {
+    if (quests && accountStore) {
       Object.keys(quests).map((questId) => {
         let quest = quests[questId]
-        // if db doesnt know quest is done, and quest *IS* done, mark it as redeemable
         if (
-          accountStore &&
-          accountStore?.quests?.[ALL_QUESTS[questId].definition.name] !==
-            quest.progress &&
-          quest.redeemable === undefined // only
+          quest.progress >= 100 &&
+          quest.redeemable === undefined &&
+          (!userDBData ||
+            userDBData?.quests?.[ALL_QUESTS[questId].definition.name] !==
+              quest.progress)
         ) {
-          // if done mark as redeemable if havent already
-          if (quest.progress >= 100 && !quest.redeemable) {
-            updateQuestRedeemable(questId, true)
-          }
-        } else if (!accountStore && quest.redeemable === undefined) {
-          if (quest.progress >= 100 && !quest.redeemable) {
-            updateQuestRedeemable(questId, true)
-          }
+          updateQuestRedeemable(questId, true)
         }
         return true
       })
     }
-  }, [account, accountStore, quests, updateQuestRedeemable])
+  }, [account, accountStore, quests, updateQuestRedeemable, userDBData])
 
   return null
 }
@@ -205,8 +213,10 @@ export function useScore() {
 
   const quests = state?.[QUESTS]
 
+  const accountStore = state?.accountStore
+
   useEffect(() => {
-    if (quests) {
+    if (quests && accountStore) {
       let score = 0
       Object.keys(quests).map((questId) => {
         if (quests[questId].progress >= 100 && !quests[questId].redeemable) {
@@ -216,7 +226,7 @@ export function useScore() {
       })
       updateScore(score)
     }
-  }, [quests, updateScore])
+  }, [quests, updateScore, accountStore])
 
   return state?.[SCORE]
 }
