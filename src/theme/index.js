@@ -1,22 +1,29 @@
-import React from 'react'
-import { ThemeProvider as StyledComponentsThemeProvider, createGlobalStyle, css } from 'styled-components'
+import React from "react"
+import {
+  ThemeProvider as StyledComponentsThemeProvider,
+  createGlobalStyle,
+  css,
+} from "styled-components"
 
-export * from './components'
+export * from "./components"
 
 const MEDIA_WIDTHS = {
   upToSmall: 600,
   upToMedium: 960,
-  upToLarge: 1280
+  upToLarge: 1280,
 }
 
-const mediaWidthTemplates = Object.keys(MEDIA_WIDTHS).reduce((accumulator, size) => {
-  accumulator[size] = (...args) => css`
-    @media (max-width: ${MEDIA_WIDTHS[size]}px) {
-      ${css(...args)}
-    }
-  `
-  return accumulator
-}, {})
+const mediaWidthTemplates = Object.keys(MEDIA_WIDTHS).reduce(
+  (accumulator, size) => {
+    accumulator[size] = (...args) => css`
+      @media (max-width: ${MEDIA_WIDTHS[size]}px) {
+        ${css(...args)}
+      }
+    `
+    return accumulator
+  },
+  {}
+)
 
 const flexColumnNoWrap = css`
   display: flex;
@@ -28,75 +35,81 @@ const flexRowNoWrap = css`
   flex-flow: row nowrap;
 `
 
-const white = '#FFFFFF'
-const black = '#000000'
+const white = "#FFFFFF"
+const black = "#000000"
 
 export default function ThemeProvider({ children }) {
-  return <StyledComponentsThemeProvider theme={theme(true)}>{children}</StyledComponentsThemeProvider>
+  return (
+    <StyledComponentsThemeProvider theme={theme(true)}>
+      {children}
+    </StyledComponentsThemeProvider>
+  )
 }
 
-const theme = darkMode => ({
+const theme = (darkMode) => ({
   white,
   black,
-  textColor: darkMode ? white : '#010101',
-  greyText: darkMode ? white : '#6C7284',
+  textColor: darkMode ? white : "#010101",
+  greyText: darkMode ? white : "#6C7284",
 
-  bigPadding: '32px',
-  textMargin: '24px',
-  regular: '16px',
+  bigPadding: "32px",
+  textMargin: "24px",
+  regular: "16px",
 
   // for setting css on <html>
-  backgroundColor: darkMode ? '#111111' : white,
+  backgroundColor: darkMode ? "#111111" : white,
 
-  modalBackground: darkMode ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.3)',
-  inputBackground: darkMode ? '#202124' : white,
-  placeholderGray: darkMode ? '#5F5F5F' : '#E1E1E1',
-  shadowColor: darkMode ? '#000' : '#2F80ED',
+  modalBackground: darkMode ? "rgba(0,0,0,0.6)" : "rgba(0,0,0,0.3)",
+  inputBackground: darkMode ? "#202124" : white,
+  placeholderGray: darkMode ? "#5F5F5F" : "#E1E1E1",
+  shadowColor: darkMode ? "#000" : "#2F80ED",
 
   // grays
-  concreteGray: darkMode ? '#292C2F' : '#FAFAFA',
-  mercuryGray: darkMode ? '#333333' : '#E1E1E1',
-  silverGray: darkMode ? '#737373' : '#C4C4C4',
-  chaliceGray: darkMode ? '#7B7B7B' : '#AEAEAE',
-  doveGray: darkMode ? '#C4C4C4' : '#737373',
-  mineshaftGray: darkMode ? '#E1E1E1' : '#2B2B2B',
-  buttonOutlineGrey: darkMode ? '#FAFAFA' : '#F2F2F2',
-  tokenRowHover: darkMode ? '#404040' : '#F2F2F2',
+  concreteGray: darkMode ? "#292C2F" : "#FAFAFA",
+  mercuryGray: darkMode ? "#333333" : "#E1E1E1",
+  silverGray: darkMode ? "#737373" : "#C4C4C4",
+  chaliceGray: darkMode ? "#7B7B7B" : "#AEAEAE",
+  doveGray: darkMode ? "#C4C4C4" : "#737373",
+  mineshaftGray: darkMode ? "#E1E1E1" : "#2B2B2B",
+  buttonOutlineGrey: darkMode ? "#FAFAFA" : "#F2F2F2",
+  tokenRowHover: darkMode ? "#404040" : "#F2F2F2",
 
   //blacks
-  charcoalBlack: darkMode ? '#F2F2F2' : '#404040',
+  charcoalBlack: darkMode ? "#F2F2F2" : "#404040",
   // blues
-  zumthorBlue: darkMode ? '#212529' : '#EBF4FF',
-  malibuBlue: darkMode ? '#E67AEF' : '#5CA2FF',
-  royalBlue: darkMode ? '#DC6BE5' : '#2F80ED',
-  loadingBlue: darkMode ? '#e4f0ff' : '#e4f0ff',
+  zumthorBlue: darkMode ? "#212529" : "#EBF4FF",
+  malibuBlue: darkMode ? "#E67AEF" : "#5CA2FF",
+  royalBlue: darkMode ? "#DC6BE5" : "#2F80ED",
+  loadingBlue: darkMode ? "#e4f0ff" : "#e4f0ff",
 
   // purples
-  wisteriaPurple: '#DC6BE5',
-  outlinePurple: '#564F7D',
+  wisteriaPurple: "#DC6BE5",
+  outlinePurple: "#564F7D",
   // reds
-  salmonRed: '#FF6871',
+  salmonRed: "#FF6871",
   // orange
-  pizazzOrange: '#FF8F05',
+  pizazzOrange: "#FF8F05",
   // yellows
-  warningYellow: '#FFE270',
+  warningYellow: "#FFE270",
   // pink
-  uniswapPink: '#DC6BE5',
-  connectedGreen: '#27AE60',
+  uniswapPink: "#DC6BE5",
+  connectedGreen: "#27AE60",
 
   //specific
   textHover: darkMode ? theme.uniswapPink : theme.doveGray,
+
+  primary1: "#6955F6",
 
   // media queries
   mediaWidth: mediaWidthTemplates,
   // css snippets
   flexColumnNoWrap,
-  flexRowNoWrap
+  flexRowNoWrap,
 })
 
 export const GlobalStyle = createGlobalStyle`
   @supports (font-variation-settings: normal) {
-    html { font-family: 'Open Sans', 'Roboto Mono', serif;}
+    html { font-family: 'Avenir',serif;}
   }
   
   html,

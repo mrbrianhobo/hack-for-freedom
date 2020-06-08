@@ -1,10 +1,8 @@
 import React, { useState } from "react"
 import styled from "styled-components"
-// import { useWeb3React } from "@web3-react/core"
 import { useMedia } from "use-media"
-// import Copy from "../AccountDetails/Copy"
-import Spinner from "../Spinner"
-import { useQuests } from "../../contexts/Application"
+import Spinner from "../components/Spinner"
+import { useAllQuestData } from "../contexts/Application"
 
 const Wrapper = styled.div`
   display: grid;
@@ -123,26 +121,6 @@ const History = styled.div`
   }
 `
 
-// const CopyLink = styled.div`
-//   grid-area: link;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-
-//   & > div {
-//     max-width: 180px;
-//     color: #A1A4B1;
-//     font-size: 12px;
-//     height: 27px;
-//     border: 1px solid ${({ theme }) => theme.outlinePurple};
-//     border-radius: 20px;
-//     background: #1F1F1F;
-//     padding 0 15px;
-//     display: flex;
-//     align-items: center;
-//   }
-// `
-
 const Activity = styled.div`
   display: grid;
   grid-template-columns: 75px auto 100px;
@@ -259,12 +237,8 @@ const Footer = styled.div`
   grid-area: footer;
 `
 
-export default function ActivityHistory() {
-  const quests = useQuests()
-
-  // const { account } = useWeb3React()
-
-  // const isExtraSmall = useMedia({ maxWidth: "970px" })
+export default function ProfilePage() {
+  const [questData] = useAllQuestData()
 
   const isXXSmall = useMedia({ maxWidth: "930px" })
 
@@ -277,7 +251,7 @@ export default function ActivityHistory() {
   return (
     <>
       {" "}
-      {quests.length > 0 ? (
+      {questData.length > 0 ? (
         <Wrapper>
           {isXXSmall && (
             <Switcher>
@@ -291,13 +265,12 @@ export default function ActivityHistory() {
               <SubHeading>Badges you've earned so far</SubHeading>
             </div>
             <BadgeList>
-              {quests &&
-                quests.map((quest) => {
+              {questData &&
+                questData.map((quest) => {
                   if (quest.progress >= 100) {
                     return (
                       <Badge
-                        src={require("../../assets/images/" +
-                          quest.badgeImgPath)}
+                        src={require("../assets/images/" + quest.badgeImgPath)}
                         alt=""
                         key={quest.name}
                       />
@@ -313,22 +286,19 @@ export default function ActivityHistory() {
               <SubHeading>Quests you've completed so far</SubHeading>
             </div>
             <div style={{ gridArea: "activities" }}>
-              {quests &&
-                quests.map((quest) => {
+              {questData &&
+                questData.map((quest) => {
                   if (quest.progress >= 100) {
                     return (
                       <Activity key={quest.name}>
                         <Icon>
                           <img
-                            src={require("../../assets/images/" +
-                              quest.imgPath)}
+                            src={require("../assets/images/" + quest.imgPath)}
                             alt=""
                           />
                         </Icon>
                         <QuestOverview>
-                          <Platform color={quest.color}>
-                            {quest.name}
-                          </Platform>
+                          <Platform color={quest.color}>{quest.name}</Platform>
                           <BlurbWrapper>{quest.blurb}</BlurbWrapper>
                         </QuestOverview>
                         <Points style={{ gridArea: "points" }}>
@@ -338,7 +308,7 @@ export default function ActivityHistory() {
                           <Link>
                             <a href={quest.url}>
                               <img
-                                src={require("../../assets/images/globe.png")}
+                                src={require("../assets/images/globe.png")}
                                 alt="etherscan link"
                               />
                             </a>

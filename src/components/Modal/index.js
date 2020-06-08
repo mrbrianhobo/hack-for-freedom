@@ -110,7 +110,7 @@ export default function Modal({
   onDismiss,
   minHeight = false,
   maxHeight = 80,
-  initialFocusRef,
+  initialFocusRef = null,
   children,
 }) {
   const transitions = useTransition(isOpen, null, {
