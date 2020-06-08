@@ -92,28 +92,6 @@ const LoginWrapper = styled.div`
   }
 `
 
-const Score = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: Inter;
-  font-weight: bold;
-  width: fit-content;
-  height: 32px;
-  color: #8dfbc9;
-  padding: 0 10px;
-  border: 1px solid #8dfbc9;
-  border-radius: 30px;
-
-  @media (max-width: 970px) {
-    display: ${({ account }) => (account === undefined ? "none" : "flex")};
-  }
-
-  @media (max-width: 580px) {
-    margin-right: 25px;
-  }
-`
-
 const LevelDiv = ({ className, score }) => {
   const level = getLevelFromScore(score);
   const currentXP = level < MAX_LEVEL ? score - LEVELS[level] : score;
@@ -248,24 +226,6 @@ const SidebarItem = styled.div`
   :hover {
     cursor: pointer;
     border-bottom: 1px solid #8dfbc9;
-  }
-`
-
-const SidebarScore = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: Inter;
-  font-weight: bold;
-  max-width: 100px;
-  padding: 0 10px;
-  height: 32px;
-  color: #8dfbc9;
-  border: 1px solid #8dfbc9;
-  border-radius: 30px;
-
-  @media (max-width: 580px) {
-    margin: 15px auto;
   }
 `
 
