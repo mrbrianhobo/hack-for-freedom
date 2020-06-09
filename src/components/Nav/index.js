@@ -354,25 +354,25 @@ function Nav({ history }) {
             }}
             active={history.location.pathname === "/"}
           >
-            Dashboard
+            Explore
           </SidebarItem>
           <SidebarItem
             onClick={() => {
-              history.push("/activity")
+              history.push("/tracks")
               toggleSidebar(sidebarOpen)
             }}
-            active={history.location.pathname === "/activity"}
+            active={history.location.pathname === "/tracks"}
           >
-            Activity
+            Tracks
           </SidebarItem>
           <SidebarItem
             onClick={() => {
-              history.push("/progress")
+              history.push("/profile")
               toggleSidebar(sidebarOpen)
             }}
-            active={history.location.pathname === "/progress"}
+            active={history.location.pathname === "/profile"}
           >
-            Progress
+            Profile
           </SidebarItem>
           <SidebarItem
             onClick={() => {
