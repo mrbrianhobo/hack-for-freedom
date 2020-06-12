@@ -36,13 +36,16 @@ export const UNISWAP_QUESTS: { [questKey: string]: QuestObject } = {
   UNI1: {
     // this is the global definition of the quest
     definition: {
+      id: "UNI1",
       name: "UNI-101",
       track: TrackOption.UNISWAP,
+      blurb: "Swap on Uniswap",
       description: "Make a token swap on Uniswap V1",
       link: "",
       color: "",
-      imageName: "",
+      iconOption: "",
       points: 100,
+      tier: 1,
     },
     fetchProgress: fetchUni101,
   },

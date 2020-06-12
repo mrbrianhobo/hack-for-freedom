@@ -4,13 +4,16 @@ import { UNISWAP_QUESTS } from "./Uniswap"
 
 // requirements for every quest
 export interface QuestDefinition {
+  id: string
   name: string
   track: TrackOption
+  blurb: string
   description: string
   link: string
   color: string
-  imageName: string
+  iconOption: string
   points: number
+  tier: number
 }
 
 // enforce a base definition and fetching script for progress
