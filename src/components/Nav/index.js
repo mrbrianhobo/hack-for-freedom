@@ -4,6 +4,7 @@ import { useWeb3React } from "@web3-react/core"
 import Web3Status from "../Web3Status"
 import useMedia from "use-media"
 import { useScore } from "../../contexts/Application"
+import { LEVELS, MAX_LEVEL } from "../../constants"
 import { withRouter } from "react-router-dom"
 import { Text } from "rebass"
 import { Hover } from "../../theme/components"
@@ -11,7 +12,7 @@ import { Hover } from "../../theme/components"
 const NavWrapper = styled.div`
   display: flex;
   width: 100%;
-  height: 55px;
+  height: 60px;
   align-items: center;
 
   @media (max-width: 970px) {
@@ -21,14 +22,19 @@ const NavWrapper = styled.div`
 
 const BrandWrapper = styled.div`
   display: flex;
-  width: 22%;
+  width: 30%;
   justify-content: flex-start;
   align-items: center;
-  margin-left: 35px;
+  padding-left: 40px;
   font-size: 45px;
+
+  @media (max-width: 580px) {
+    padding-left: 16px;
+  }
 `
 
 const Logo = styled.img`
+  display: flex;
   width: 150px;
 `
 
@@ -64,10 +70,10 @@ const NavItem = styled.div`
 
 const AccountWrapper = styled.div`
   display: flex;
-  margin-left: 30px;
-  width: 25%;
+  padding-right: 40px;
+  width: 30%;
   align-items: center;
-  justify-content: space-around;
+  justify-content: flex-end;
 
   @media (max-width: 580px) {
     width: 100%;
@@ -86,26 +92,91 @@ const LoginWrapper = styled.div`
   }
 `
 
-const Score = styled.div`
+const LevelDiv = ({ className, score }) => {
+  const level = getLevelFromScore(score);
+  const currentXP = level < MAX_LEVEL ? score - LEVELS[level] : score;
+  const XPtoNextLevel = level < MAX_LEVEL ? LEVELS[level + 1] - LEVELS[level] : 0;
+  return (
+    <div className={className}>
+      <LevelInfo level={level} />
+      <ProgressBar xp={currentXP} xpNext={XPtoNextLevel} />
+      <ProgressXP xp={currentXP} xpNext={XPtoNextLevel} />
+    </div>
+  )
+}
+
+const Level = styled(LevelDiv)`
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   font-family: Inter;
-  font-weight: bold;
-  width: fit-content;
-  height: 32px;
-  color: #8dfbc9;
-  padding: 0 10px;
-  border: 1px solid #8dfbc9;
-  border-radius: 30px;
+  padding: 16px;
 
   @media (max-width: 970px) {
-    display: ${({ account }) => (account === undefined ? "none" : "flex")};
+    display: none;
   }
+`
 
-  @media (max-width: 580px) {
-    margin-right: 25px;
-  }
+const LevelInfoDiv = ({ className, level }) => {
+  return <div className={className}>Level {level}</div>
+}
+
+const LevelInfo = styled(LevelInfoDiv)`
+  font-family: Inter;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 13px;
+  line-height: 24px;
+  letter-spacing: 2px;
+`
+
+const FilledBar = styled.div`
+  position: absolute;
+  height: 10px;
+  background: #8DFBC9;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 50px;
+  margin: 0.5px;
+`
+
+const XPBar = styled.div`
+  position: relative;
+  width: 150px;
+  height: 10px;
+  background: #242424;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 50px;
+  margin: 0.5px;
+`
+
+const ProgressBar = ({ xp, xpNext }) => {
+  // xp / relative level xp * 150 (width of xp bar)
+  const fillWidth = xpNext > 0 ? xp / xpNext * 150 : 150;
+  return (
+    <XPBar>
+      <FilledBar style={{width: fillWidth }} />
+    </XPBar>
+  )
+}
+
+const ProgressXPDiv = ({ className, xp, xpNext }) => {
+  return (
+    xpNext > 0 
+      ? <div className={className}>{xp}/{xpNext} XP</div>
+      : <div className={className}>{xp} XP</div>
+  )
+}
+
+const ProgressXP = styled(ProgressXPDiv)`
+  font-family: Inter;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 10px;
+  line-height: 24px;
+  letter-spacing: 2px;
+  color: #8DFBC9;
+  opacity: 0.5;
 `
 
 const Sidebar = styled.div`
@@ -158,21 +229,11 @@ const SidebarItem = styled.div`
   }
 `
 
-const SidebarScore = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: Inter;
-  font-weight: bold;
-  max-width: 100px;
-  padding: 0 10px;
-  height: 32px;
-  color: #8dfbc9;
-  border: 1px solid #8dfbc9;
-  border-radius: 30px;
+const SidebarLevel = styled(Level)`
+  padding: 0px;
 
-  @media (max-width: 580px) {
-    margin: 15px auto;
+  @media (max-width: 970px) {
+    display: flex;
   }
 `
 
@@ -187,6 +248,17 @@ const CloseIcon = styled.div`
   top: 20px;
   right: 20px;
 `
+
+const getLevelFromScore = (score) => {
+  let currentLvl = 1;
+  const levels = Object.keys(LEVELS);
+  for (const level of levels) {
+    if (score >= LEVELS[level]) {
+      currentLvl = level
+    }
+  }
+  return parseInt(currentLvl);
+}
 
 function Nav({ history }) {
   const [sidebarOpen, toggleSidebarOpen] = useState(false)
@@ -249,7 +321,7 @@ function Nav({ history }) {
               <Web3Status />
             </LoginWrapper>
           )}
-          {account && <Score account={account}>{score} XP</Score>}
+          {account && <Level score={score} />}
           {isExtraSmall && (
             <Hover
               onClick={() => {
@@ -273,7 +345,7 @@ function Nav({ history }) {
             />
           </a>
         </SidebarBrandWrapper>
-        {account && <SidebarScore>{score} XP</SidebarScore>}
+        {account && <SidebarLevel score={score} />}
         <SidebarList>
           <SidebarItem
             onClick={() => {
@@ -282,25 +354,25 @@ function Nav({ history }) {
             }}
             active={history.location.pathname === "/"}
           >
-            Dashboard
+            Explore
           </SidebarItem>
           <SidebarItem
             onClick={() => {
-              history.push("/activity")
+              history.push("/tracks")
               toggleSidebar(sidebarOpen)
             }}
-            active={history.location.pathname === "/activity"}
+            active={history.location.pathname === "/tracks"}
           >
-            Activity
+            Tracks
           </SidebarItem>
           <SidebarItem
             onClick={() => {
-              history.push("/progress")
+              history.push("/profile")
               toggleSidebar(sidebarOpen)
             }}
-            active={history.location.pathname === "/progress"}
+            active={history.location.pathname === "/profile"}
           >
-            Progress
+            Profile
           </SidebarItem>
           <SidebarItem
             onClick={() => {

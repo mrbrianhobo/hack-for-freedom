@@ -61,4 +61,18 @@ export const MOBILE_DEEP_LINKS = {
   },
 }
 
+export const LEVELS = {
+  1: 0,
+  2: 100,
+  3: 300,
+  4: 750,
+  5: 1500,
+  6: 3000,
+  7: 5000,
+  8: 7500,
+  9: 10000,
+}
+
+export const MAX_LEVEL = 9
+
 export const NetworkContextName = "NETWORK"
