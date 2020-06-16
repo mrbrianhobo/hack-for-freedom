@@ -1,7 +1,4 @@
 import { ICON_OPTIONS } from "../components/IconManager"
-import { QuestObject } from "../quests"
-import { COMPOUND_QUESTS } from "../quests/Compound"
-import { UNISWAP_QUESTS } from "../quests/Uniswap"
 
 // possible tracks a quest could be under
 export enum TrackOption {

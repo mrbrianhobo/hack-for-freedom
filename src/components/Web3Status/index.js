@@ -10,7 +10,6 @@ import { shortenAddress } from "../../utils"
 import { useENSName } from "../../hooks"
 import WalletModal from "../WalletModal"
 import { useWalletModalToggle } from "../../contexts/Application"
-import { Spinner } from "../../theme"
 import {
   injected,
   walletconnect,
