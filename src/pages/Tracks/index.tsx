@@ -108,11 +108,6 @@ const RedeemButton = styled.div`
   font-weight: 800;
   border-radius: 8px;
   font-size: 12px;
-
-  :hover {
-    cursor: pointer;
-    opacity: 0.6;
-  }
 `
 
 const SuccessModal = styled(Modal)`
@@ -181,19 +176,23 @@ function TrackPage() {
     let quest = ALL_QUESTS[questId].definition
     firebase
       .database()
-      .ref("users/" + account + "/quests/" + quest.name)
+      .ref("users/" + account + "/quests/" + quest.id)
       .set(100)
-    updateQuestRedeemable(questId, false)
+    updateQuestRedeemable(account, questId, false)
     setShowModal(true)
     triggerConfetti()
   }
 
-  const QuestCardEntry = ({ quest, questId, index }) => {
+  const QuestCardEntry = ({ quest, index }) => {
+    if (!quest) {
+      return <div />
+    }
     return (
       <QuestCard
         borderColor={activeTrack.primaryColor}
         onClick={() => {
-          setShowQuestDetails(true)
+          !allQuestData?.[quest.id]?.redeemable && setShowQuestDetails(true)
+          allQuestData?.[quest.id]?.redeemable && redeemPoints(quest.id)
           setActiveQuest(quest)
         }}
         key={index}
@@ -213,12 +212,16 @@ function TrackPage() {
               <Text fontSize={12} color={activeTrack.primaryColor}>
                 {quest.name}
               </Text>
-              {allQuestData[questId]?.progress && (
+              {allQuestData?.[quest.id]?.progress ? (
                 <Text fontSize={12} color={activeTrack.primaryColor}>
-                  {allQuestData[questId]?.progress >= 100
+                  {allQuestData[quest.id]?.progress >= 100
                     ? "Completed"
-                    : allQuestData[questId]?.progress + "%"}
+                    : allQuestData[quest.id]?.progress + "%"}
                 </Text>
+              ) : allQuestData?.[quest.id]?.progress === 0 ? (
+                "0%"
+              ) : (
+                ""
               )}
             </RowBetween>
             <Text fontSize={16}>{quest.blurb}</Text>
@@ -234,15 +237,12 @@ function TrackPage() {
           <Text fontSize={14} fontWeight={800} color={activeTrack.primaryColor}>
             {quest.points} XP
           </Text>
-          {allQuestData?.[questId]?.redeemable && (
-            <RedeemButton
-              backgroundColor={activeTrack.primaryColor}
-              onClick={() => redeemPoints(questId)}
-            >
+          {allQuestData?.[quest.id]?.redeemable && (
+            <RedeemButton backgroundColor={activeTrack.primaryColor}>
               Redeem
             </RedeemButton>
           )}
-          {allQuestData?.[questId]?.progress >= 100 && (
+          {!allQuestData?.[quest.id]?.redeemable && (
             <Text
               fontWeight={800}
               fotnSize={14}
@@ -263,7 +263,7 @@ function TrackPage() {
           <Text fontSize={30} fontWeight={800}>
             You have earned
           </Text>
-          <AutoRow gap="10px">
+          <AutoRow gap="4px">
             <IconManager iconOption={activeTrack.iconOption} />
             <Text
               color={activeTrack.primaryColor}
@@ -273,13 +273,9 @@ function TrackPage() {
               {activeQuest?.points}
             </Text>
           </AutoRow>
-          <ButtonPrimary
-            width={"240px"}
-            style={{ marginTop: "80px" }}
-            onClick={() => setShowModal(false)}
-          >
+          <ButtonPrimary width={"240px"} onClick={() => setShowModal(false)}>
             <Text fontSize={20} fontWeight={800}>
-              OK
+              Nice!
             </Text>
           </ButtonPrimary>
         </ModalContent>
@@ -385,7 +381,7 @@ function TrackPage() {
                 </AutoRow>
                 <AutoColumn gap="10px" justify="flex-end">
                   <ScorePill
-                    score={trackScore}
+                    score={activeQuest.points}
                     iconOption={activeTrack.iconOption}
                     color={activeTrack.primaryColor}
                     bg={true}
@@ -405,7 +401,7 @@ function TrackPage() {
               style={{ padding: "0 80px" }}
             >
               <AutoColumn gap="10px">
-                <Text color="#676767">Progress</Text>
+                <Text color="#676767">Your Progress</Text>
                 <Text fontSize={20} fontWeight={600} color="#D5D5D5">
                   {allQuestData[activeQuest.id]?.progress}%
                 </Text>
@@ -418,7 +414,7 @@ function TrackPage() {
               <ScorePill
                 iconOption={activeTrack.iconOption}
                 color={activeTrack.primaryColor}
-                score={trackScore}
+                score={activeQuest.points}
                 bg={true}
               />
             </AutoColumn>
@@ -442,12 +438,7 @@ function TrackPage() {
               .map((questId, index) => {
                 const quest: QuestDefinition = quests[questId].definition
                 return (
-                  <QuestCardEntry
-                    quest={quest}
-                    questId={questId}
-                    index={index}
-                    key={index}
-                  />
+                  <QuestCardEntry quest={quest} index={index} key={index} />
                 )
               })}
           </TierRow>

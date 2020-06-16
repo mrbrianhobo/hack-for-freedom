@@ -38,3 +38,12 @@ export function getQuestsFromTrack(track: TrackOption) {
       return COMPOUND_QUESTS
   }
 }
+
+export function getTotalXpFromTrack(track: TrackOption): number {
+  let quests = getQuestsFromTrack(track)
+  let total = 0
+  Object.keys(quests).map((questId) => {
+    return (total = total + quests[questId].definition.points)
+  })
+  return total
+}
