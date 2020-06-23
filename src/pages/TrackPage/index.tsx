@@ -16,6 +16,7 @@ import { Hover } from "../../theme"
 import { triggerConfetti } from "../../utils"
 import Modal from "../../components/Modal"
 import { ButtonPrimary } from "../../components/Button"
+import Leaderboard from "../../components/Leaderboard"
 
 const MAX_WIDTH = "80%"
 
@@ -200,6 +201,7 @@ function TrackPage() {
               key={index}
               onClick={() => {
                 setActiveTrack(track)
+                setActiveSection(Section.Tasks)
                 setShowQuestDetails(false)
               }}
               active={activeTrack === track}
@@ -256,96 +258,100 @@ function TrackPage() {
           </Text>
         </Hover>
       </AutoRow>
-      {showQuestDetails ? (
-        <QuestDetailsWrapper>
-          <AutoColumn gap="40px" width="100%">
-            <RowFixed>
-              <Hover>
-                <Text
-                  onClick={() => {
-                    setShowQuestDetails(false)
-                  }}
-                >
-                  ← Back to all tasks
-                </Text>
-              </Hover>
-            </RowFixed>
-            <AutoColumn gap="20px" justify="center">
-              <Text fontSize={24} fontWeight={800}>
-                {activeQuest.name}
-              </Text>
-              <Text fontSize={14} fontWeight={600}>
-                {activeQuest.description}
-              </Text>
-              <ButtonPrimary style={{ marginTop: "20px" }} width={"300px"}>
-                <Text fontSize={18} fontWeight={800}>
-                  Go to dapp
-                </Text>
-              </ButtonPrimary>
-            </AutoColumn>
-          </AutoColumn>
-        </QuestDetailsWrapper>
-      ) : (
-        <TasksWrapper>
-          {Object.keys(quests).map((questId, index) => {
-            const quest: QuestDefinition = quests[questId].definition
-            return (
-              <QuestCard
-                borderColor={activeTrack.primaryColor}
-                onClick={() => {
-                  setShowQuestDetails(true)
-                  setActiveQuest(quest)
-                }}
-                key={index}
-              >
-                <Row
-                  gap="10px"
-                  style={{
-                    padding: "20px",
-                    backgroundColor: "#1F1F1F",
-                    width: "calc(100% - 40px)",
-                    borderRadius: "10px",
-                  }}
-                >
-                  <IconManager iconOption={activeTrack.iconOption} />
-                  <AutoColumn
-                    style={{ maxWidth: "160px", marginLeft: "20px" }}
-                    gap="10px"
-                  >
-                    <Text fontSize={10} color={activeTrack.primaryColor}>
-                      {quest.name}
-                    </Text>
-                    <Text fontSize={16}>{quest.description}</Text>
-                  </AutoColumn>
-                </Row>
-                <RowBetween
-                  style={{
-                    backgroundColor: "#141414",
-                    padding: "14px 20px",
-                    borderRadius: "10px",
-                  }}
-                >
+      {activeSection === Section.Tasks ? (
+        showQuestDetails ? (
+          <QuestDetailsWrapper>
+            <AutoColumn gap="40px" width="100%">
+              <RowFixed>
+                <Hover>
                   <Text
-                    fontSize={12}
-                    fontWeight={800}
-                    color={activeTrack.primaryColor}
+                    onClick={() => {
+                      setShowQuestDetails(false)
+                    }}
                   >
-                    {quest.points} XP
+                    ← Back to all tasks
                   </Text>
-                  {allQuestData?.[questId]?.redeemable && (
-                    <RedeemButton
-                      backgroundColor={activeTrack.primaryColor}
-                      onClick={() => redeemPoints(questId)}
+                </Hover>
+              </RowFixed>
+              <AutoColumn gap="20px" justify="center">
+                <Text fontSize={24} fontWeight={800}>
+                  {activeQuest.name}
+                </Text>
+                <Text fontSize={14} fontWeight={600}>
+                  {activeQuest.description}
+                </Text>
+                <ButtonPrimary style={{ marginTop: "20px" }} width={"300px"}>
+                  <Text fontSize={18} fontWeight={800}>
+                    Go to dapp
+                  </Text>
+                </ButtonPrimary>
+              </AutoColumn>
+            </AutoColumn>
+          </QuestDetailsWrapper>
+        ) : (
+          <TasksWrapper>
+            {Object.keys(quests).map((questId, index) => {
+              const quest: QuestDefinition = quests[questId].definition
+              return (
+                <QuestCard
+                  borderColor={activeTrack.primaryColor}
+                  onClick={() => {
+                    setShowQuestDetails(true)
+                    setActiveQuest(quest)
+                  }}
+                  key={index}
+                >
+                  <Row
+                    gap="10px"
+                    style={{
+                      padding: "20px",
+                      backgroundColor: "#1F1F1F",
+                      width: "calc(100% - 40px)",
+                      borderRadius: "10px",
+                    }}
+                  >
+                    <IconManager iconOption={activeTrack.iconOption} />
+                    <AutoColumn
+                      style={{ maxWidth: "160px", marginLeft: "20px" }}
+                      gap="10px"
                     >
-                      Redeem
-                    </RedeemButton>
-                  )}
-                </RowBetween>
-              </QuestCard>
-            )
-          })}
-        </TasksWrapper>
-      )}
+                      <Text fontSize={10} color={activeTrack.primaryColor}>
+                        {quest.name}
+                      </Text>
+                      <Text fontSize={16}>{quest.description}</Text>
+                    </AutoColumn>
+                  </Row>
+                  <RowBetween
+                    style={{
+                      backgroundColor: "#141414",
+                      padding: "14px 20px",
+                      borderRadius: "10px",
+                    }}
+                  >
+                    <Text
+                      fontSize={12}
+                      fontWeight={800}
+                      color={activeTrack.primaryColor}
+                    >
+                      {quest.points} XP
+                    </Text>
+                    {allQuestData?.[questId]?.redeemable && (
+                      <RedeemButton
+                        backgroundColor={activeTrack.primaryColor}
+                        onClick={() => redeemPoints(questId)}
+                      >
+                        Redeem
+                      </RedeemButton>
+                    )}
+                  </RowBetween>
+                </QuestCard>
+              )
+            })}
+          </TasksWrapper>
+        )
+      ) :
+        <Leaderboard track={activeTrack} />
+      }
     </PageWrapper>
   )
 }
