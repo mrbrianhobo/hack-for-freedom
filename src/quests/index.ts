@@ -1,3 +1,5 @@
+import { UNISWAP_CATEGORIES } from "./Uniswap/index"
+import { COMPOUND_CATEGORIES } from "./Compound/index"
 import { COMPOUND_QUESTS } from "./Compound"
 import { TrackOption } from "../Tracks"
 import { UNISWAP_QUESTS } from "./Uniswap"
@@ -13,7 +15,6 @@ export interface QuestDefinition {
   color: string
   iconOption: string
   points: number
-  tier: number
 }
 
 // enforce a base definition and fetching script for progress
@@ -36,6 +37,19 @@ export function getQuestsFromTrack(track: TrackOption) {
       return UNISWAP_QUESTS
     default:
       return COMPOUND_QUESTS
+  }
+}
+
+export function getCategoriesFromTrack(
+  track: TrackOption
+): [{ name: string; quests: string[] }] {
+  switch (track) {
+    case TrackOption.COMPOUND:
+      return COMPOUND_CATEGORIES
+    case TrackOption.UNISWAP:
+      return UNISWAP_CATEGORIES
+    default:
+      return COMPOUND_CATEGORIES
   }
 }
 

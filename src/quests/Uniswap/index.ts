@@ -32,6 +32,13 @@ export const fetchUni101 = async function(account: string): Promise<number> {
   return progress
 }
 
+export const UNISWAP_CATEGORIES: [{ name: string; quests: string[] }] = [
+  {
+    name: "Swap",
+    quests: ["UNI1"],
+  },
+]
+
 export const UNISWAP_QUESTS: { [questKey: string]: QuestObject } = {
   UNI1: {
     // this is the global definition of the quest
@@ -45,7 +52,6 @@ export const UNISWAP_QUESTS: { [questKey: string]: QuestObject } = {
       color: "",
       iconOption: "",
       points: 100,
-      tier: 1,
     },
     fetchProgress: fetchUni101,
   },
