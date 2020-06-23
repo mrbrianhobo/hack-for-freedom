@@ -5,8 +5,8 @@ import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom"
 import Web3ReactManager from "../components/Web3ReactManager"
 import Nav from "../components/Nav"
 import AltHome from "./Home"
-import TrackPage from "./TrackPage"
-import ProfilePage from "../pages/Profile"
+import TrackPage from "./Tracks"
+import ProfilePage from "./Profile"
 import FAQ from "../components/Faq"
 
 const AppWrapper = styled.div`

@@ -13,6 +13,7 @@ export const ICON_OPTIONS = {
   COMPOUND: "compound.png",
   UNISWAP: "uniswap.png",
   OPEN_SEA: "opensea.jpg",
+  PIGGY: "COMP-101-badge.svg",
 }
 
 export default function IconManager({

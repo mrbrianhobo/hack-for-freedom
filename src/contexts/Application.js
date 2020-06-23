@@ -165,6 +165,8 @@ export function Updater() {
 
   const userDBData = account && accountStore?.[account]
 
+  const userScore = state?.[SCORE]
+
   // on account change, fetch all quests from firebase and save them in context
   useEffect(() => {
     firebase
@@ -204,6 +206,21 @@ export function Updater() {
       })
     }
   }, [account, accountStore, quests, updateQuestRedeemable, userDBData])
+
+  useEffect(() => {
+    if (userScore && account) {
+      firebase
+        .database()
+        .ref("users/" + account + "/totalXP/")
+        .set(userScore)
+    }
+    if (account && !userScore) {
+      firebase
+        .database()
+        .ref("users/" + account + "/totalXP/")
+        .set(0)
+    }
+  }, [account, userScore])
 
   return null
 }
