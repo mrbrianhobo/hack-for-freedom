@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
-import styled from 'styled-components'
+import React, { useState } from "react"
+import styled from "styled-components"
 import { Text } from "rebass"
-import { ButtonPrimary } from '../Button'
+import { ButtonPrimary } from "../Button"
 
 const LeaderboardWrapper = styled.div`
   display: flex;
@@ -11,7 +11,13 @@ const LeaderboardWrapper = styled.div`
   padding: 40px;
   max-width: calc(80% - 80px);
   // background-color: #171717;
-  background: linear-gradient(to bottom, #171717 0%, #171717 300px, ${({ color }) => color } 300px, ${({ color }) => color } 100%);
+  background: linear-gradient(
+    to bottom,
+    #171717 0%,
+    #171717 300px,
+    ${({ color }) => color} 300px,
+    ${({ color }) => color} 100%
+  );
   border-radius: 10px;
 `
 
@@ -25,7 +31,7 @@ const LeaderboardHeading = styled.div`
   flex-direction: row;
   justify-content: space-between;
   text-align: center;
-  color: #E3E3E3;
+  color: #e3e3e3;
 `
 
 const LeaderboardBody = styled.div`
@@ -54,7 +60,7 @@ const UserScore = styled(UserScoreDiv)`
   flex-direction: column;
   align-items: center;
   text-align: center;
-  color: #E3E3E3;
+  color: #e3e3e3;
 `
 
 const ScoreDiv = ({ className, score }) => {
@@ -62,7 +68,7 @@ const ScoreDiv = ({ className, score }) => {
     <div className={className}>
       <Text>{score} XP</Text>
     </div>
-  ) 
+  )
 }
 
 const Score = styled(ScoreDiv)`
@@ -73,11 +79,12 @@ const Score = styled(ScoreDiv)`
   font-weight: bold;
   font-size: 14px;
   line-height: 24px;
-  margin-top: ${({ isLeader }) => (isLeader === undefined || false ? "6px" : "0px")};
+  margin-top: ${({ isLeader }) =>
+    isLeader === undefined || false ? "6px" : "0px"};
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #1F1F1F;
+  background: #1f1f1f;
   border-radius: 5px;
   color: ${({ color }) => color};
 `
@@ -88,15 +95,16 @@ const Level = styled(Text)`
   font-weight: 500;
   font-size: 14px;
   line-height: 15px;
-  text-align: ${({ isLeader }) => (isLeader === undefined || false ? "left" : "center")};
+  text-align: ${({ isLeader }) =>
+    isLeader === undefined || false ? "left" : "center"};
   padding-bottom: 8px;
-  color: #DCDCDC;
+  color: #dcdcdc;
 `
 
 const NameDiv = ({ className, level, name, isLeader }) => {
   return (
     <div className={className}>
-      <Level isLeader={isLeader} >Level {level}</Level>
+      <Level isLeader={isLeader}>Level {level}</Level>
       <Text>{name}</Text>
     </div>
   )
@@ -106,18 +114,20 @@ const Name = styled(NameDiv)`
   height: 45px;
   width: 120px;
   max-width: 120px;
-  text-align: ${({ isLeader }) => (isLeader === undefined || false ? "left" : "center")};
+  text-align: ${({ isLeader }) =>
+    isLeader === undefined || false ? "left" : "center"};
   font-family: Avenir;
   font-style: normal;
   font-weight: 700;
   font-size: 18px;
   line-height: 15px;
-  color: #FBFBFB;
+  color: #fbfbfb;
   overflow: scroll;
 `
 
 const Avatar = styled.div`
-  margin-top: ${({ isLeader }) => (isLeader === undefined || false ? "0px" : "-30px")};
+  margin-top: ${({ isLeader }) =>
+    isLeader === undefined || false ? "0px" : "-30px"};
   width: 60px;
   height: 60px;
   border-radius: 50%;
@@ -133,9 +143,13 @@ const LeaderScoreRowDiv = ({ className, color, score }) => {
   return (
     <div className={className}>
       <Score isLeader={true} color={color} score={score} />
-      <Text style={{
-        width: "100px"
-      }}>View Profile</Text>
+      <Text
+        style={{
+          width: "100px",
+        }}
+      >
+        View Profile
+      </Text>
     </div>
   )
 }
@@ -176,8 +190,9 @@ const TopLeaderCard = styled(TopLeaderCardDiv)`
   font-size: 14px;
   line-height: 24px;
 
-  background: #1F1F1F;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), inset 0px 1px 4px rgba(141, 251, 201, 0.05);
+  background: #1f1f1f;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25),
+    inset 0px 1px 4px rgba(141, 251, 201, 0.05);
   border-radius: 10px;
 `
 
@@ -214,7 +229,7 @@ const LeaderboardCard = styled(LeaderboardCardDiv)`
   justify-content: space-around;
   align-items: center;
   text-align: center;
-  background: #1F1F1F;
+  background: #1f1f1f;
   border-radius: 20px;
 `
 
@@ -232,8 +247,8 @@ const ViewButton = styled(ButtonPrimary)`
 
 const Separator = styled.hr`
   margin: 30px auto;
-  width: 70%
-  border: 1px solid rgba(255, 255, 255, 0.1)
+  width: 70%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 `
 
 const leaderboardWithUser = {
@@ -242,7 +257,7 @@ const leaderboardWithUser = {
     name: "scottoshi.eth",
     imageUrl: "ethmoji_sample.png",
     points: 200,
-    onLeaderboard: false
+    onLeaderboard: false,
   },
   leaders: [
     {
@@ -255,68 +270,70 @@ const leaderboardWithUser = {
       name: "vitalik.eth",
       imageUrl: "ethmoji_sample.png",
       level: 2,
-      points: 999
+      points: 999,
     },
     {
       name: "flynn.eth",
       imageUrl: "ethmoji_sample.png",
       level: 2,
-      points: 988
+      points: 988,
     },
     {
       name: "eric.eth",
       imageUrl: "ethmoji_sample.png",
       level: 2,
-      points: 900
+      points: 900,
     },
     {
       name: "ismoney.eth",
       imageUrl: "ethmoji_sample.png",
       level: 2,
-      points: 850
+      points: 850,
     },
     {
       name: "rainbow.eth",
       imageUrl: "ethmoji_sample.png",
       level: 2,
-      points: 800
+      points: 800,
     },
     {
       name: "stan36.eth",
       imageUrl: "ethmoji_sample.png",
       level: 2,
-      points: 700
+      points: 700,
     },
     {
       name: "matthew.cent.eth",
       imageUrl: "ethmoji_sample.png",
       level: 2,
-      points: 600
+      points: 600,
     },
     {
       name: "toast.eth",
       imageUrl: "ethmoji_sample.png",
       level: 2,
-      points: 500
+      points: 500,
     },
     {
       name: "defidude.eth",
       imageUrl: "ethmoji_sample.png",
       level: 2,
-      points: 400
-    }
-  ]
+      points: 400,
+    },
+  ],
 }
-
 
 export default function Leaderboard({ track }) {
   const [activeTrack] = useState(track)
 
   return (
-    <LeaderboardWrapper color={activeTrack.primaryColor} >
+    <LeaderboardWrapper color={activeTrack.primaryColor}>
       <LeaderboardHeading>
         <Text>Leaderboard</Text>
-        <UserScore color={activeTrack.primaryColor} score={leaderboardWithUser.user.points} />
+        <UserScore
+          color={activeTrack.primaryColor}
+          score={leaderboardWithUser.user.points}
+        />
       </LeaderboardHeading>
       <Separator />
       <LeaderboardBody>
@@ -324,29 +341,32 @@ export default function Leaderboard({ track }) {
           {leaderboardWithUser.leaders.map((leader, i) => {
             if (i < 3) {
               return (
-                <TopLeaderCard 
+                <TopLeaderCard
                   color={activeTrack.primaryColor}
-                  rank={i+1}
+                  rank={i + 1}
                   level={leader.level}
                   name={leader.name}
                   score={leader.points}
                 />
               )
             }
+            return true
           })}
         </LeaderCardRow>
         {leaderboardWithUser.leaders.map((leader, i) => {
           if (i > 2) {
             return (
-              <LeaderboardCard 
+              <LeaderboardCard
                 color={activeTrack.primaryColor}
-                rank={i+1}
+                rank={i + 1}
                 level={leader.level}
                 name={leader.name}
                 score={leader.points}
               />
             )
-          }})}
+          }
+          return true
+        })}
       </LeaderboardBody>
       <ViewButton>View More</ViewButton>
     </LeaderboardWrapper>
