@@ -222,7 +222,9 @@ function TrackPage() {
                 {quest.name}
               </Text>
               <Text fontSize={12} color={activeTrack.primaryColor}>
-                {`Step ${step} of ${stepCount}`}
+                {step === stepCount && !allQuestData[quest.id]?.redeemable
+                  ? "Category Completed"
+                  : `Step ${step} of ${stepCount}`}
               </Text>
             </RowBetween>
             <Text fontSize={16}>{quest.blurb}</Text>
@@ -396,7 +398,8 @@ function TrackPage() {
               let currentQuest = allQuestData[questId]
               if (
                 liveIndex === category.quests.length - 1 ||
-                currentQuest?.progress < 100
+                currentQuest?.progress < 100 ||
+                allQuestData[questId]?.redeemable
               ) {
                 foundLatest = true
               } else {
