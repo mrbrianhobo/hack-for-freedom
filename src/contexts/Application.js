@@ -20,7 +20,6 @@ const QUESTS = "QUESTS"
 const TOGGLE_WALLET_MODAL = "TOGGLE_WALLET_MODAL"
 const UPDATE_SCORE = "UPDATE_SCORE"
 const UPDATE_DB_DATA = "UPDATE_DB_DATA"
-const UPDATE_QUESTS = "UPDATE_QUESTS"
 const UPDATE_QUEST_PROGRESS = "UPDATE_QUEST_PROGRESS"
 const UPDATE_QUEST_REDEEMABLE = "UPDATE_QUEST_REDEEMABLE"
 
@@ -33,48 +32,56 @@ function useApplicationContext() {
 function reducer(state, { type, payload }) {
   switch (type) {
     case UPDATE_SCORE: {
-      const { score } = payload
+      const { account, score } = payload
       return {
         ...state,
-        [SCORE]: score,
+        [account]: {
+          ...state?.[account],
+          [SCORE]: score,
+        },
       }
     }
     case UPDATE_DB_DATA: {
-      const { accountStore } = payload
+      const { account, accountStore } = payload
       return {
         ...state,
-        accountStore,
+        [account]: {
+          ...state?.[account],
+          accountStore,
+        },
       }
     }
-    case UPDATE_QUESTS: {
-      const { quests } = payload
-      return {
-        ...state,
-        [QUESTS]: quests,
-      }
-    }
+
     case UPDATE_QUEST_PROGRESS: {
-      const { questId, progress } = payload
+      const { account, questId, progress } = payload
       return {
         ...state,
-        [QUESTS]: {
-          ...state?.QUESTS,
-          [questId]: {
-            ...state?.QUESTS?.[questId],
-            progress,
+
+        [account]: {
+          ...state?.[account],
+          [QUESTS]: {
+            ...state?.[account]?.QUESTS,
+            [questId]: {
+              ...state?.[account]?.QUESTS?.[questId],
+              progress,
+            },
           },
         },
       }
     }
+
     case UPDATE_QUEST_REDEEMABLE: {
-      const { questId, redeemable } = payload
+      const { account, questId, redeemable } = payload
       return {
         ...state,
-        [QUESTS]: {
-          ...state?.QUESTS,
-          [questId]: {
-            ...state?.QUESTS?.[questId],
-            redeemable,
+        [account]: {
+          ...state?.[account],
+          [QUESTS]: {
+            ...state?.[account]?.QUESTS,
+            [questId]: {
+              ...state?.[account]?.QUESTS?.[questId],
+              redeemable,
+            },
           },
         },
       }
@@ -93,30 +100,31 @@ function reducer(state, { type, payload }) {
 export default function Provider({ children }) {
   const [state, dispatch] = useReducer(reducer, {
     [WALLET_MODAL_OPEN]: false,
-    [SCORE]: 0,
-    [QUESTS]: [],
   })
 
   const toggleWalletModal = useCallback(() => {
     dispatch({ type: TOGGLE_WALLET_MODAL })
   }, [])
 
-  const updateScore = useCallback((score) => {
-    dispatch({ type: UPDATE_SCORE, payload: { score } })
+  const updateScore = useCallback((account, score) => {
+    dispatch({ type: UPDATE_SCORE, payload: { account, score } })
   }, [])
 
-  const updateAccountStore = useCallback((accountStore) => {
-    dispatch({ type: UPDATE_DB_DATA, payload: { accountStore } })
+  const updateAccountStore = useCallback((account, accountStore) => {
+    dispatch({ type: UPDATE_DB_DATA, payload: { account, accountStore } })
   }, [])
 
-  const updateQuestProgress = useCallback((questId, progress) => {
-    dispatch({ type: UPDATE_QUEST_PROGRESS, payload: { questId, progress } })
+  const updateQuestProgress = useCallback((account, questId, progress) => {
+    dispatch({
+      type: UPDATE_QUEST_PROGRESS,
+      payload: { account, questId, progress },
+    })
   }, [])
 
-  const updateQuestRedeemable = useCallback((questId, redeemable) => {
+  const updateQuestRedeemable = useCallback((account, questId, redeemable) => {
     dispatch({
       type: UPDATE_QUEST_REDEEMABLE,
-      payload: { questId, redeemable },
+      payload: { account, questId, redeemable },
     })
   }, [])
 
@@ -159,23 +167,24 @@ export function Updater() {
     state,
     { updateQuestProgress, updateQuestRedeemable, updateAccountStore },
   ] = useApplicationContext()
-  const quests = state?.[QUESTS]
+  const quests = state?.[account]?.[QUESTS]
 
-  const accountStore = state?.accountStore
+  const accountStore = state?.[account]?.accountStore
 
   const userDBData = account && accountStore?.[account]
 
-  const userScore = state?.[SCORE]
+  const userScore = state?.[account]?.[SCORE]
 
   // on account change, fetch all quests from firebase and save them in context
   useEffect(() => {
-    firebase
-      .database()
-      .ref("/users/")
-      .once("value")
-      .then(function(snapshot) {
-        updateAccountStore(snapshot?.val())
-      })
+    account &&
+      firebase
+        .database()
+        .ref("/users/")
+        .once("value")
+        .then(function(snapshot) {
+          updateAccountStore(account, snapshot?.val())
+        })
   }, [account, updateAccountStore])
 
   // loop through all quests, fetch current progress based on account, and update
@@ -183,24 +192,24 @@ export function Updater() {
     if (account) {
       Object.keys(ALL_QUESTS).map(async (questId) => {
         let progress = await ALL_QUESTS[questId].fetchProgress(account)
-        updateQuestProgress(questId, progress)
+        updateQuestProgress(account, questId, progress)
       })
     }
   }, [account, updateQuestProgress, updateQuestRedeemable])
 
   // check for which quests are redeemable
   useEffect(() => {
-    if (quests && accountStore) {
+    if (account && quests && accountStore) {
       Object.keys(quests).map((questId) => {
         let quest = quests[questId]
         if (
           quest.progress >= 100 &&
           quest.redeemable === undefined &&
           (!userDBData ||
-            userDBData?.quests?.[ALL_QUESTS[questId].definition.name] !==
+            userDBData?.quests?.[ALL_QUESTS[questId].definition.id] !==
               quest.progress)
         ) {
-          updateQuestRedeemable(questId, true)
+          updateQuestRedeemable(account, questId, true)
         }
         return true
       })
@@ -228,12 +237,14 @@ export function Updater() {
 export function useScore() {
   const [state, { updateScore }] = useApplicationContext()
 
-  const quests = state?.[QUESTS]
+  const { account } = useWeb3React()
 
-  const accountStore = state?.accountStore
+  const quests = state?.[account]?.[QUESTS]
+
+  const accountStore = state?.[account]?.accountStore
 
   useEffect(() => {
-    if (quests && accountStore) {
+    if (quests && accountStore && account) {
       let score = 0
       Object.keys(quests).map((questId) => {
         if (quests[questId].progress >= 100 && !quests[questId].redeemable) {
@@ -241,16 +252,24 @@ export function useScore() {
         }
         return true
       })
-      updateScore(score)
+      updateScore(account, score)
     }
-  }, [quests, updateScore, accountStore])
+  }, [quests, account, updateScore, accountStore])
 
-  return state?.[SCORE]
+  return state?.[account]?.[SCORE]
 }
 
 export function useAllQuestData() {
+  const { account } = useWeb3React()
   const [state, { updateQuestRedeemable }] = useApplicationContext()
-  return [state?.[QUESTS], updateQuestRedeemable]
+  return [state?.[account]?.[QUESTS], updateQuestRedeemable]
+}
+
+export function useUserDbData() {
+  const { account } = useWeb3React()
+  const [state] = useApplicationContext()
+  const dbData = state?.[account]?.accountStore
+  return dbData
 }
 
 export function useWalletModalOpen() {
