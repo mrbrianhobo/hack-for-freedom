@@ -1,13 +1,12 @@
 import React from "react"
 import styled from "styled-components"
-
 // import { useAllQuestData } from "../contexts/Application"
 import { AutoColumn } from "../../components/Column"
 import { RowFixed } from "../../components/Row"
 import Identicon from "../../components/Identicon"
-import { Text } from "rebass"
 import { useWeb3React } from "@web3-react/core"
 import { useENSName } from "../../hooks"
+import { Text } from "rebass"
 
 const PageWrapper = styled.div`
   display: flex;
