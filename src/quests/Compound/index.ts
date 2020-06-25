@@ -25,13 +25,6 @@ export const fetchComp101 = async function(account: string): Promise<number> {
   return progress
 }
 
-export const COMPOUND_CATEGORIES: [{ name: string; quests: string[] }] = [
-  {
-    name: "Invest",
-    quests: ["COMP1", "COMP2"],
-  },
-]
-
 export const COMPOUND_QUESTS: { [questKey: string]: QuestObject } = {
   COMP1: {
     // this is the global definition of the quest
@@ -46,22 +39,7 @@ export const COMPOUND_QUESTS: { [questKey: string]: QuestObject } = {
       color: "",
       iconOption: ICON_OPTIONS.PIGGY,
       points: 100,
-    },
-    fetchProgress: fetchComp101,
-  },
-  COMP2: {
-    // this is the global definition of the quest
-    definition: {
-      id: "COMP2",
-      name: "COMP-102",
-      track: TrackOption.COMPOUND,
-      blurb: "Supply ETH on compound",
-      description:
-        "The Compound Protocol is a series of interest rate markets running on the Ethereum blockchain. When users and applications supply an asset to the Compound protocol, they begin earning a variable interest income instantly. Interest accrues every Ethereum block (~15 seconds), and users can withdraw their principal plus interest anytime. Under the hood, users are contributing their assets to a large pool of liquidity (a “market”) that is available for other users to borrow, and they share in the interest that borrowers pay back to the pool. When users supply assets, they receive cTokens from Compound in exchange. cTokens are ERC20 tokens that can be redeemed for their underlying assets at any time. ",
-      link: "",
-      color: "",
-      iconOption: ICON_OPTIONS.PIGGY,
-      points: 100,
+      tier: 1,
     },
     fetchProgress: fetchComp101,
   },

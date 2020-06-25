@@ -4,7 +4,6 @@ const Row = styled.div`
   display: flex;
   align-items: center;
   align-items: ${({ align }) => align && align};
-  justify-content: ${({ justify }) => justify && justify};
 `
 
 export const RowBetween = styled(Row)`
