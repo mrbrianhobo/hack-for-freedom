@@ -8,6 +8,7 @@ import { LEVELS, MAX_LEVEL } from "../../constants"
 import { withRouter } from "react-router-dom"
 import { Text } from "rebass"
 import { Hover } from "../../theme/components"
+import { AutoColumn } from "../Column"
 
 const NavWrapper = styled.div`
   display: flex;
@@ -92,20 +93,7 @@ const LoginWrapper = styled.div`
   }
 `
 
-const LevelDiv = ({ className, score }) => {
-  const level = getLevelFromScore(score);
-  const currentXP = level < MAX_LEVEL ? score - LEVELS[level] : score;
-  const XPtoNextLevel = level < MAX_LEVEL ? LEVELS[level + 1] - LEVELS[level] : 0;
-  return (
-    <div className={className}>
-      <LevelInfo level={level} />
-      <ProgressBar xp={currentXP} xpNext={XPtoNextLevel} />
-      <ProgressXP xp={currentXP} xpNext={XPtoNextLevel} />
-    </div>
-  )
-}
-
-const Level = styled(LevelDiv)`
+const Level = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -118,11 +106,7 @@ const Level = styled(LevelDiv)`
   }
 `
 
-const LevelInfoDiv = ({ className, level }) => {
-  return <div className={className}>Level {level}</div>
-}
-
-const LevelInfo = styled(LevelInfoDiv)`
+const LevelInfo = styled.div`
   font-family: Inter;
   font-style: normal;
   font-weight: bold;
@@ -134,7 +118,7 @@ const LevelInfo = styled(LevelInfoDiv)`
 const FilledBar = styled.div`
   position: absolute;
   height: 10px;
-  background: #8DFBC9;
+  background: #8dfbc9;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 50px;
   margin: 0.5px;
@@ -152,19 +136,21 @@ const XPBar = styled.div`
 
 const ProgressBar = ({ xp, xpNext }) => {
   // xp / relative level xp * 150 (width of xp bar)
-  const fillWidth = xpNext > 0 ? xp / xpNext * 150 : 150;
+  const fillWidth = xpNext > 0 ? (xp / xpNext) * 150 : 150
   return (
     <XPBar>
-      <FilledBar style={{width: fillWidth }} />
+      <FilledBar style={{ width: fillWidth ? fillWidth : 0 }} />
     </XPBar>
   )
 }
 
 const ProgressXPDiv = ({ className, xp, xpNext }) => {
-  return (
-    xpNext > 0 
-      ? <div className={className}>{xp}/{xpNext} XP</div>
-      : <div className={className}>{xp} XP</div>
+  return xpNext > 0 ? (
+    <div className={className}>
+      {xp}/{xpNext} XP
+    </div>
+  ) : (
+    <div className={className}>{xp} XP</div>
   )
 }
 
@@ -175,7 +161,7 @@ const ProgressXP = styled(ProgressXPDiv)`
   font-size: 10px;
   line-height: 24px;
   letter-spacing: 2px;
-  color: #8DFBC9;
+  color: #8dfbc9;
   opacity: 0.5;
 `
 
@@ -229,13 +215,13 @@ const SidebarItem = styled.div`
   }
 `
 
-const SidebarLevel = styled(Level)`
-  padding: 0px;
+// const SidebarLevel = styled(Level)`
+//   padding: 0px;
 
-  @media (max-width: 970px) {
-    display: flex;
-  }
-`
+//   @media (max-width: 970px) {
+//     display: flex;
+//   }
+// `
 
 const SidebarLoginWrapper = styled.div`
   max-width: 200px;
@@ -250,14 +236,14 @@ const CloseIcon = styled.div`
 `
 
 const getLevelFromScore = (score) => {
-  let currentLvl = 1;
-  const levels = Object.keys(LEVELS);
+  let currentLvl = 1
+  const levels = Object.keys(LEVELS)
   for (const level of levels) {
     if (score >= LEVELS[level]) {
       currentLvl = level
     }
   }
-  return parseInt(currentLvl);
+  return parseInt(currentLvl)
 }
 
 function Nav({ history }) {
@@ -272,6 +258,11 @@ function Nav({ history }) {
   function toggleSidebar(sidebarOpen) {
     toggleSidebarOpen(sidebarOpen === true ? false : true)
   }
+
+  const level = score ? getLevelFromScore(score) : null
+  const currentXP = level < MAX_LEVEL ? score - LEVELS[level] : score
+  const XPtoNextLevel =
+    level < MAX_LEVEL ? LEVELS[level + 1] - LEVELS[level] : 0
 
   return (
     <>
@@ -334,6 +325,19 @@ function Nav({ history }) {
             </Hover>
           )}
         </AccountWrapper>
+        {account && (
+          <AutoColumn
+            gap="2px"
+            justify="center"
+            style={{ marginRight: "40px" }}
+          >
+            <Text fontWeight={800} fontSize={12}>
+              {"Level " + (level ? level : "")}
+            </Text>
+            <ProgressBar xp={300} xpNext={XPtoNextLevel} />
+            <ProgressXP xp={300} xpNext={XPtoNextLevel} />
+          </AutoColumn>
+        )}
       </NavWrapper>
       <Sidebar sidebarOpen={sidebarOpen}>
         <CloseIcon onClick={() => toggleSidebarOpen(false)}>X</CloseIcon>
@@ -345,7 +349,13 @@ function Nav({ history }) {
             />
           </a>
         </SidebarBrandWrapper>
-        {account && <SidebarLevel score={score} />}
+        {account && (
+          <Level>
+            <LevelInfo level={level} />
+            <ProgressBar xp={currentXP} xpNext={XPtoNextLevel} />
+            <ProgressXP xp={currentXP} xpNext={XPtoNextLevel} />
+          </Level>
+        )}
         <SidebarList>
           <SidebarItem
             onClick={() => {

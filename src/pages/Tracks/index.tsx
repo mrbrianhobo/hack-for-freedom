@@ -21,6 +21,7 @@ import { Hover } from "../../theme"
 import { triggerConfetti } from "../../utils"
 import Modal from "../../components/Modal"
 import { ButtonPrimary } from "../../components/Button"
+import Leaderboard from "../../components/Leaderboard"
 import ScorePill from "../../components/ScorePill"
 
 const MAX_WIDTH = "80%"
@@ -332,6 +333,7 @@ function TrackPage() {
               key={index}
               onClick={() => {
                 setActiveTrack(track)
+                setActiveSection(Section.Tasks)
                 setShowQuestDetails(false)
               }}
               active={activeTrack === track}
@@ -388,45 +390,49 @@ function TrackPage() {
           </Text>
         </Hover>
       </AutoRow>
-      <TasksWrapper>
-        {allQuestData &&
-          categories.map((category, index) => {
-            let liveIndex = 0
-            let foundLatest = false
-            while (!foundLatest) {
-              let questId = category.quests[liveIndex]
-              let currentQuest = allQuestData[questId]
-              if (
-                liveIndex === category.quests.length - 1 ||
-                currentQuest?.progress < 100 ||
-                allQuestData[questId]?.redeemable
-              ) {
-                foundLatest = true
-              } else {
-                liveIndex = liveIndex + 1
+      {activeSection === Section.Leaderboard ? (
+        <Leaderboard track={activeTrack} />
+      ) : (
+        <TasksWrapper>
+          {allQuestData &&
+            categories.map((category, index) => {
+              let liveIndex = 0
+              let foundLatest = false
+              while (!foundLatest) {
+                let questId = category.quests[liveIndex]
+                let currentQuest = allQuestData[questId]
+                if (
+                  liveIndex === category.quests.length - 1 ||
+                  currentQuest?.progress < 100 ||
+                  allQuestData[questId]?.redeemable
+                ) {
+                  foundLatest = true
+                } else {
+                  liveIndex = liveIndex + 1
+                }
               }
-            }
-            let latestQuest = quests[category.quests[liveIndex]].definition
-            return (
-              <TierRow key={index}>
-                <Text
-                  style={{ position: "absolute", top: 0, left: 0 }}
-                  fontWeight={800}
-                  color={activeTrack.primaryColor}
-                >
-                  {category.name}
-                </Text>
-                <QuestCardEntry
-                  quest={latestQuest}
-                  index={index}
-                  key={index}
-                  step={liveIndex + 1}
-                  stepCount={category.quests.length}
-                />
-              </TierRow>
-            )
-          })}
-      </TasksWrapper>
+              let latestQuest = quests[category.quests[liveIndex]].definition
+              return (
+                <TierRow key={index}>
+                  <Text
+                    style={{ position: "absolute", top: 0, left: 0 }}
+                    fontWeight={800}
+                    color={activeTrack.primaryColor}
+                  >
+                    {category.name}
+                  </Text>
+                  <QuestCardEntry
+                    quest={latestQuest}
+                    index={index}
+                    key={index}
+                    step={liveIndex + 1}
+                    stepCount={category.quests.length}
+                  />
+                </TierRow>
+              )
+            })}
+        </TasksWrapper>
+      )}
     </PageWrapper>
   )
 }
