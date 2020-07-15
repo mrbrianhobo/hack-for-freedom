@@ -23,6 +23,7 @@ import Modal from "../../components/Modal"
 import { ButtonPrimary } from "../../components/Button"
 import Leaderboard from "../../components/Leaderboard"
 import ScorePill from "../../components/ScorePill"
+import Club from "../../components/Club"
 
 const MAX_WIDTH = "80%"
 
@@ -134,7 +135,7 @@ const TierRow = styled(AutoRow)`
 
 enum Section {
   Tasks,
-  Leaderboard,
+  Club,
 }
 
 function DashboardPage() {
@@ -383,15 +384,17 @@ function DashboardPage() {
         <Hover>
           <Text
             fontWeight={800}
-            color={activeSection === Section.Leaderboard ? "white" : "#727272"}
-            onClick={() => setActiveSection(Section.Leaderboard)}
+            color={activeSection === Section.Club ? "white" : "#727272"}
+            onClick={() => setActiveSection(Section.Club)}
           >
-            Leaderboard
+            Club
           </Text>
         </Hover>
       </AutoRow>
-      {activeSection === Section.Leaderboard ? (
-        <Leaderboard track={activeTrack} />
+
+      {activeSection === Section.Club ? (
+        <Club />
+        // <Leaderboard track={activeTrack} />
       ) : (
         <TasksWrapper>
           {allQuestData &&
