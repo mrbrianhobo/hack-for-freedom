@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react"
-
+import ThreeBoxComments from '3box-comments-react';
 import { useAllQuestData } from "../../contexts/Application"
 import firebase from "firebase/app"
 import "firebase/database"
 import { useWeb3React } from "@web3-react/core"
+
+// import { useWeb3React } from "../../hooks"
 import {
   ALL_QUESTS,
   QuestDefinition,
@@ -24,6 +26,21 @@ import { ButtonPrimary } from "../../components/Button"
 import Leaderboard from "../../components/Leaderboard"
 import ScorePill from "../../components/ScorePill"
 import Club from "../../components/Club"
+
+
+import { SUPPORTED_WALLETS } from "../../constants"
+import {
+  injected, 
+  walletconnect,
+  walletlink,
+  fortmatic,
+} from "../../connectors"
+import CoinbaseWalletIcon from "../../assets/images/coinbaseWalletIcon.svg"
+import WalletConnectIcon from "../../assets/images/walletConnectIcon.svg"
+import FortmaticIcon from "../../assets/images/fortmaticIcon.png"
+
+const Box = require("3box")
+
 
 const MAX_WIDTH = "80%"
 
@@ -137,6 +154,16 @@ enum Section {
   Tasks,
   Club,
 }
+
+
+const { account, connector } = useWeb3React()
+
+    async function getBox() {
+      const box = await Box.openBox(account)
+      return box
+      }
+      
+  
 
 function DashboardPage() {
   const { account } = useWeb3React()
@@ -393,7 +420,9 @@ function DashboardPage() {
       </AutoRow>
 
       {activeSection === Section.Club ? (
-        <Club />
+        <Club box={getBox} account={account} />
+
+        
         // <Leaderboard track={activeTrack} />
       ) : (
         <TasksWrapper>

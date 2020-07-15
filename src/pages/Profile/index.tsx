@@ -172,7 +172,7 @@ export default function ProfilePage() {
             <Identicon size={40} />
             <AutoColumn gap="10px" style={{ marginLeft: "40px" }}>
               <Text fontWeight={600} color={"#B8B8B8"} fontSize={24}>
-                Level 4
+                Level X
               </Text>
               <Text fontWeight={800} fontSize={24}>
                 {customUser ? customUser : ensName ? ensName : account}
