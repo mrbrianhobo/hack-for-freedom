@@ -1,8 +1,6 @@
-import { UNISWAP_CATEGORIES } from "./Uniswap/index"
 import { COMPOUND_CATEGORIES } from "./Compound/index"
 import { COMPOUND_QUESTS } from "./Compound"
 import { TrackOption } from "../Tracks"
-import { UNISWAP_QUESTS } from "./Uniswap"
 
 // requirements for every quest
 export interface QuestDefinition {
@@ -26,15 +24,12 @@ export interface QuestObject {
 // combine all quests defined in sub folders
 export const ALL_QUESTS: { [questKey: string]: QuestObject } = {
   ...COMPOUND_QUESTS,
-  ...UNISWAP_QUESTS,
 }
 
 export function getQuestsFromTrack(track: TrackOption) {
   switch (track) {
     case TrackOption.COMPOUND:
       return COMPOUND_QUESTS
-    case TrackOption.UNISWAP:
-      return UNISWAP_QUESTS
     default:
       return COMPOUND_QUESTS
   }
@@ -46,8 +41,6 @@ export function getCategoriesFromTrack(
   switch (track) {
     case TrackOption.COMPOUND:
       return COMPOUND_CATEGORIES
-    case TrackOption.UNISWAP:
-      return UNISWAP_CATEGORIES
     default:
       return COMPOUND_CATEGORIES
   }

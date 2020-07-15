@@ -286,10 +286,10 @@ function Nav({ history }) {
               Explore
             </NavItem>
             <NavItem
-              onClick={() => history.push("/tracks")}
-              active={history.location.pathname === "/tracks"}
+              onClick={() => history.push("/dashboard")}
+              active={history.location.pathname === "/dashboard"}
             >
-              Tracks
+              Dashboard
             </NavItem>
             <NavItem
               onClick={() => history.push("/profile")}
@@ -297,12 +297,12 @@ function Nav({ history }) {
             >
               Profile
             </NavItem>
-            <NavItem
+            {/* <NavItem
               onClick={() => history.push("/faq")}
               active={history.location.pathname === "/faq"}
             >
               FAQ
-            </NavItem>
+            </NavItem> */}
           </NavList>
         )}
 
@@ -368,12 +368,12 @@ function Nav({ history }) {
           </SidebarItem>
           <SidebarItem
             onClick={() => {
-              history.push("/tracks")
+              history.push("/dashboard")
               toggleSidebar(sidebarOpen)
             }}
-            active={history.location.pathname === "/tracks"}
+            active={history.location.pathname === "/dashboard"}
           >
-            Tracks
+            Dashboard
           </SidebarItem>
           <SidebarItem
             onClick={() => {
@@ -384,7 +384,7 @@ function Nav({ history }) {
           >
             Profile
           </SidebarItem>
-          <SidebarItem
+          {/* <SidebarItem
             onClick={() => {
               history.push("/faq")
               toggleSidebar(sidebarOpen)
@@ -392,7 +392,7 @@ function Nav({ history }) {
             active={history.location.pathname === "/faq"}
           >
             FAQ
-          </SidebarItem>
+          </SidebarItem> */}
         </SidebarList>
         <SidebarLoginWrapper>
           <Web3Status />

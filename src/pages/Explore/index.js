@@ -129,31 +129,6 @@ export default function QuestSection({ account }) {
             applications.
           </Text>
         </HeaderWrapper>
-        <TrackSection>
-          <Text fontWeight={900} fontSize={24}>
-            Explore tracks
-          </Text>
-          <TrackGroup>
-            <TrackCard
-              iconOption={ICON_OPTIONS.UNISWAP}
-              color={"#F8EAFF"}
-              title="Uniswap"
-              blurb="Get to know the basics of Uniswap, the exchange for everything."
-            />
-            <TrackCard
-              iconOption={ICON_OPTIONS.COMPOUND}
-              color={"#BBE4D8"}
-              title="Compound Finance"
-              blurb="Get to know the basics of Compound Finance."
-            />
-            <TrackCard
-              iconOption={ICON_OPTIONS.OPEN_SEA}
-              color={"#D8F1FF"}
-              title="OpenSea"
-              blurb="Get to know the basics of OpenSea"
-            />
-          </TrackGroup>
-        </TrackSection>
       </AutoColumn>
     </Wrapper>
   )

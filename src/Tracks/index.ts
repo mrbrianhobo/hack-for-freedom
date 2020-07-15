@@ -3,7 +3,6 @@ import { ICON_OPTIONS } from "../components/IconManager"
 // possible tracks a quest could be under
 export enum TrackOption {
   COMPOUND,
-  UNISWAP,
 }
 
 export interface TrackDefinition {
@@ -24,13 +23,5 @@ export const ALL_TRACKS: TrackDefinition[] = [
     iconOption: ICON_OPTIONS.COMPOUND,
     primaryColor: "#C9FFE6",
     secondaryColor: "#2B5944",
-  },
-  {
-    track: TrackOption.UNISWAP,
-    name: "Uniswap",
-    description: "A decentralized protcol for automated liquidity.",
-    iconOption: ICON_OPTIONS.UNISWAP,
-    primaryColor: "#FFE1EE",
-    secondaryColor: "#724E5D",
-  },
+  }
 ]

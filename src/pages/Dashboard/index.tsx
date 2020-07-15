@@ -137,7 +137,7 @@ enum Section {
   Leaderboard,
 }
 
-function TrackPage() {
+function DashboardPage() {
   const { account } = useWeb3React()
 
   const [allQuestData, updateQuestRedeemable] = useAllQuestData()
@@ -437,4 +437,4 @@ function TrackPage() {
   )
 }
 
-export default TrackPage
+export default DashboardPage
