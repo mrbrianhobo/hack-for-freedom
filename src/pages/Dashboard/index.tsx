@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react"
-import ThreeBoxComments from '3box-comments-react';
+
 import { useAllQuestData } from "../../contexts/Application"
 import firebase from "firebase/app"
 import "firebase/database"
 import { useWeb3React } from "@web3-react/core"
-
-// import { useWeb3React } from "../../hooks"
 import {
   ALL_QUESTS,
   QuestDefinition,
@@ -28,19 +26,7 @@ import ScorePill from "../../components/ScorePill"
 import Club from "../../components/Club"
 
 
-import { SUPPORTED_WALLETS } from "../../constants"
-import {
-  injected, 
-  walletconnect,
-  walletlink,
-  fortmatic,
-} from "../../connectors"
-import CoinbaseWalletIcon from "../../assets/images/coinbaseWalletIcon.svg"
-import WalletConnectIcon from "../../assets/images/walletConnectIcon.svg"
-import FortmaticIcon from "../../assets/images/fortmaticIcon.png"
-
 const Box = require("3box")
-
 
 const MAX_WIDTH = "80%"
 
@@ -154,16 +140,6 @@ enum Section {
   Tasks,
   Club,
 }
-
-
-const { account, connector } = useWeb3React()
-
-    async function getBox() {
-      const box = await Box.openBox(account)
-      return box
-      }
-      
-  
 
 function DashboardPage() {
   const { account } = useWeb3React()
@@ -420,9 +396,9 @@ function DashboardPage() {
       </AutoRow>
 
       {activeSection === Section.Club ? (
-        <Club box={getBox} account={account} />
-
-        
+        //Placeholder because club isn't working properly for me
+        <Text></Text>
+        // <Club box={getBox} account={"0x565b93a15d38acd79c120b15432d21e21ed274d6"}/>
         // <Leaderboard track={activeTrack} />
       ) : (
         <TasksWrapper>
