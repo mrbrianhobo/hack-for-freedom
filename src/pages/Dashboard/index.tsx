@@ -25,9 +25,6 @@ import Leaderboard from "../../components/Leaderboard"
 import ScorePill from "../../components/ScorePill"
 import Club from "../../components/Club"
 
-
-const Box = require("3box")
-
 const MAX_WIDTH = "80%"
 
 const PageWrapper = styled.div`
@@ -43,6 +40,8 @@ const PageWrapper = styled.div`
     width: ${MAX_WIDTH};
   }
 `
+
+
 
 const MenuItem = styled.div`
   padding: 16px 32px;
@@ -141,6 +140,8 @@ enum Section {
   Club,
 }
 
+
+
 function DashboardPage() {
   const { account } = useWeb3React()
 
@@ -174,6 +175,20 @@ function DashboardPage() {
       setTrackScore(newScore)
     }
   }, [quests, allQuestData])
+
+function checkScore() {
+  if (trackScore >= 200) {
+    var message = "welcome to da club"
+    }
+    else {
+     //  const short = 200 - trackScore 
+   var message = "You need more points to unlock the Compound Club. Go back to tasks to complete more challenges!"
+
+  }
+  alert(message);
+    console.log(message);
+    return message
+}
 
   // update to done in db and mark as unredeemable locally
   function redeemPoints(questId: string) {
@@ -228,7 +243,7 @@ function DashboardPage() {
               </Text>
               <Text fontSize={12} color={activeTrack.primaryColor}>
                 {step === stepCount && !allQuestData[quest.id]?.redeemable
-                  ? "Category Completed"
+                  ? "Category Completed | Go To Club"
                   : `Step ${step} of ${stepCount}`}
               </Text>
             </RowBetween>
@@ -384,11 +399,12 @@ function DashboardPage() {
             Task Overview
           </Text>
         </Hover>
-        <Hover>
+        <Hover >
           <Text
             fontWeight={800}
             color={activeSection === Section.Club ? "white" : "#727272"}
             onClick={() => setActiveSection(Section.Club)}
+            // 
           >
             Club
           </Text>
@@ -396,10 +412,7 @@ function DashboardPage() {
       </AutoRow>
 
       {activeSection === Section.Club ? (
-        //Placeholder because club isn't working properly for me
-        <Text></Text>
-        // <Club box={getBox} account={"0x565b93a15d38acd79c120b15432d21e21ed274d6"}/>
-        // <Leaderboard track={activeTrack} />
+<ButtonPrimary onClick={checkScore} >Enter The Club</ButtonPrimary> 
       ) : (
         <TasksWrapper>
           {allQuestData &&
@@ -415,6 +428,7 @@ function DashboardPage() {
                   allQuestData[questId]?.redeemable
                 ) {
                   foundLatest = true
+                  // Need to add what to display if there are no more valid quests
                 } else {
                   liveIndex = liveIndex + 1
                 }

@@ -334,8 +334,9 @@ function Nav({ history }) {
             <Text fontWeight={800} fontSize={12}>
               {"Level " + (level ? level : "")}
             </Text>
-            <ProgressBar xp={300} xpNext={XPtoNextLevel} />
-            <ProgressXP xp={300} xpNext={XPtoNextLevel} />
+            {/*  to fix scoore */}
+            <ProgressBar xp={score} xpNext={XPtoNextLevel} />
+            <ProgressXP xp={score} xpNext={XPtoNextLevel} />
           </AutoColumn>
         )}
       </NavWrapper>

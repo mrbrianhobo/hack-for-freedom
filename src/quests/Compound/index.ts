@@ -57,7 +57,7 @@ export const COMPOUND_CATEGORIES: [{ name: string; quests: string[] }] = [
 ]
 
 export const COMPOUND_QUESTS: { [questKey: string]: QuestObject } = {
-  COMP1: {
+  COMP101: {
     // this is the global definition of the quest
     definition: {
       id: "COMP101",
@@ -73,7 +73,7 @@ export const COMPOUND_QUESTS: { [questKey: string]: QuestObject } = {
     },
     fetchProgress: fetchComp101,
   },
-  COMP2: {
+  COMP102: {
     // this is the global definition of the quest
     definition: {
       id: "COMP102",
