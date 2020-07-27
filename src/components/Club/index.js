@@ -8,8 +8,8 @@ import Row, { AutoRow, RowBetween } from "../../components/Row"
 import { AutoColumn } from "../../components/Column"
 import IconManager from "../../components/IconManager"
 import { Text } from "rebass"
-import { withWeb3 } from "web3-react"
-import { stat } from "fs"
+import { useWeb3React, PRIMARY_KEY } from "@web3-react/core"
+import { ButtonPrimary } from "../Button"
 
 const ClubWrapper = styled.div`
   display: flex;
@@ -47,12 +47,14 @@ const ClubBody = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 50px;
+  margin: 50px 0 8px 0;
 `
 
-const ClubBankDiv = ({className, supply}) => {
+const ClubBankDiv = ({className, supply, setActiveSection}) => {
   return (
-    <div>
+    <div 
+      onClick={() => setActiveSection("Bank")}
+    >
       <Text
         style={{
           fontSize: "14px",
@@ -63,7 +65,7 @@ const ClubBankDiv = ({className, supply}) => {
         Club Bank Value
       </Text>
       <div className={className}>
-        <Text>$732 USD</Text>
+        <Text>$732.42 USD</Text>
       </div>
     </div>
 		
@@ -80,12 +82,17 @@ const ClubBankCard = styled(ClubBankDiv)`
   line-height: 24px;
   border: 1px solid #C9FFE6;
   border-radius: 10px;
-  // margin-right: 80px;
+  :hover {
+    cursor: pointer;
+    opacity: 0.7;
+  }
 `
 
-const MembersDiv = ({className, totalMembers}) => {
+const MembersDiv = ({className, totalMembers , setActiveSection}) => {
   return (
-    <div>
+    <div
+      onClick={() => setActiveSection("Members")}
+    >
       <Text
         style={{
           fontSize: "14px",
@@ -113,7 +120,10 @@ const MembersCard = styled(MembersDiv)`
   line-height: 24px;
   border: 1px solid #C9FFE6;
   border-radius: 10px;
-  // margin-right: 80px;
+  :hover {
+    cursor: pointer;
+    opacity: 0.7;
+  }
 `
 
 const Level = styled(Text)`
@@ -297,14 +307,14 @@ const ProfileRow = styled.div`
   width: 80%;
 `
 
-const ProfileDiv = ({className, supply}) => {
+const ProfileDiv = ({className, supply, xp}) => {
   return (
     <div className={className}>
       <ProfileRow>
         <Name level={3} name={"brian.eth"}/>
         <Score score={150} />
       </ProfileRow>
-      <ContributionSection xp={150} total={supply} />
+      <ContributionSection xp={xp} total={supply} />
     </div>
   )
 }
@@ -315,6 +325,31 @@ const ProfileSection = styled(ProfileDiv)`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+`
+
+const MemberRowDiv = ({className, address, score, total}) => {
+  return (
+    <div className={className}>
+      <Text
+        style={{
+          marginTop: "4px"
+        }}
+      >{address}</Text>
+      <Score score={score}/>
+      <Text>{parseInt(score/total*100)}%</Text>
+    </div>
+  )
+}
+
+const MemberRow = styled(MemberRowDiv)`
+  display: flex;
+  alighn-items: center;
+  justify-content: space-around;
+  width: 80%;
+  background-color: #171717;
+  padding: 20px
+  margin: 8px;
+  border-radius: 10px;
 `
 
 const ProposalDetailsWrapper = styled.div`
@@ -426,6 +461,10 @@ export default function Club({ track }) {
   const [proposals, setProposals] = useState([])
   const [members, setMembers] = useState([])
   const [supply, setSupply] = useState(0)
+  const [activeSection, setActiveSection] = useState("Proposals")
+  const [accountXP, setAccountXP] = useState(0)
+
+  const { account } = useWeb3React()
 
   useEffect(() => {
     async function getDAOData() {
@@ -455,6 +494,13 @@ export default function Club({ track }) {
       console.log(members)
       const tokenSupply = holders.map(member => parseInt(member.balance)/tokenBalanceFactor).reduce((sum, current) => sum + current, 0)
       setSupply(tokenSupply)
+
+      for (const member of holders) {
+        console.log(account)
+        if (member.address === account) {
+          setAccountXP(parseInt(member.balance)/tokenBalanceFactor)
+        }
+      }
 
       // Fetch votes of the Voting app
       const votes = await voting.votes()
@@ -488,12 +534,12 @@ export default function Club({ track }) {
   return (
     <ClubWrapper color={activeTrack.primaryColor} >
       <ClubHeading>
-        <ClubBankCard supply={supply} />
-        <MembersCard totalMembers={members.length} />
-        <ProfileSection supply={supply} />
+        <ClubBankCard supply={supply} setActiveSection={setActiveSection}/>
+        <MembersCard totalMembers={members.length} setActiveSection={setActiveSection}/>
+        <ProfileSection xp={accountXP} supply={supply} setActiveSection={setActiveSection} />
       </ClubHeading>
       <ClubBody>
-        {proposals.map((proposal) => {
+        {activeSection === "Proposals" ? (proposals.map((proposal) => {
           return (
             <ProposalCard 
               activeTrack={activeTrack} 
@@ -503,8 +549,33 @@ export default function Club({ track }) {
               activeProposal={activeProposal}
               proposal={proposal}
             />
-        )})}
-        
+        )}))
+        : null
+      }
+      {activeSection === "Members" ? (
+        members.map((member) => {
+          return (
+            <MemberRow 
+              address={member.address}
+              score={parseInt(member.balance)/tokenBalanceFactor}
+              total={supply}
+            />
+          )
+        })
+        ): null}
+      {activeSection === "Bank" ? (
+        <div></div>
+      ) : null}
+      {activeSection !== "Proposals" ? (
+        <ButtonPrimary 
+          onClick={() => setActiveSection("Proposals")}
+          style={{
+            margin: "16px",
+            width: "150px"
+          }}
+        >Go Back</ButtonPrimary>
+      ) : null
+      }
       </ClubBody>
     </ClubWrapper>
   )
