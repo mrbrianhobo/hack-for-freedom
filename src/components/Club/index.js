@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { connect } from '@aragon/connect'
 import { Voting } from '@aragon/connect-thegraph-voting'
+import { TokenManager } from '@aragon/connect-thegraph-tokens'
 
 import styled from "styled-components"
 import Row, { AutoRow, RowBetween } from "../../components/Row"
@@ -49,7 +50,7 @@ const ClubBody = styled.div`
   margin: 50px;
 `
 
-const ClubBankDiv = ({className}) => {
+const ClubBankDiv = ({className, supply}) => {
   return (
     <div>
       <Text
@@ -62,7 +63,7 @@ const ClubBankDiv = ({className}) => {
         Club Total XP
       </Text>
       <div className={className}>
-        <Text>200 XP</Text>
+        <Text>{supply} XP</Text>
       </div>
     </div>
 		
@@ -82,7 +83,7 @@ const ClubBankCard = styled(ClubBankDiv)`
   // margin-right: 80px;
 `
 
-const MembersDiv = ({className}) => {
+const MembersDiv = ({className, totalMembers}) => {
   return (
     <div>
       <Text
@@ -95,7 +96,7 @@ const MembersDiv = ({className}) => {
         Active Members
       </Text>
       <div className={className}>
-        <Text>2/3 Members</Text>
+        <Text>2/{totalMembers} Members</Text>
       </div>
     </div>
 		
@@ -193,9 +194,9 @@ const XPBar = styled.div`
   margin: 10px;
 `
 
-const ContributionDiv = ({ xp }) => {
+const ContributionDiv = ({ xp, total }) => {
   // xp / total xp * 150 (width of xp bar)
-  const fillWidth = (xp / 300) * 300
+  const fillWidth = (xp / total) * 300
   return (
     <div>
       <Text
@@ -213,7 +214,7 @@ const ContributionDiv = ({ xp }) => {
             color: "#fff"
           }}
         >
-          50%
+          {xp/total*100}%
         </span>
       </Text>
       <XPBar>
@@ -296,14 +297,14 @@ const ProfileRow = styled.div`
   width: 80%;
 `
 
-const ProfileDiv = ({className}) => {
+const ProfileDiv = ({className, supply}) => {
   return (
     <div className={className}>
       <ProfileRow>
         <Name level={3} name={"brian.eth"}/>
         <Score score={150} />
       </ProfileRow>
-      <ContributionSection xp={150} />
+      <ContributionSection xp={150} total={supply} />
     </div>
   )
 }
@@ -415,12 +416,16 @@ const ProposalCard = styled(Proposal)`
   }
 `
 
+const tokenBalanceFactor = 1000000000000000000;
+
 export default function Club({ track }) {
   const [activeTrack] = useState(track)
   const [showModal, setShowModal] = useState(false)
   const [showProposalDetails, setShowProposalDetails] = useState(false)
   const [activeProposal, setActiveProposal] = useState(0)
   const [proposals, setProposals] = useState([])
+  const [members, setMembers] = useState([])
+  const [supply, setSupply] = useState(0)
 
   useEffect(() => {
     async function getDAOData() {
@@ -436,6 +441,20 @@ export default function Club({ track }) {
         "0x19048cb2e95f918c297480b5abdc77c262bccf7b",
         'https://api.thegraph.com/subgraphs/name/aragon/aragon-voting-rinkeby'
       )
+
+      const tokenManager = new TokenManager(
+        "0x167517ef0bce84d4b4999ee0a4349373970a1778",
+        'https://api.thegraph.com/subgraphs/name/aragon/aragon-tokens-rinkeby'
+      )
+
+      const tokens = await tokenManager.token()
+
+      const holders = await tokens.holders()
+      setMembers(holders)
+
+      console.log(members)
+      const tokenSupply = holders.map(member => parseInt(member.balance)/tokenBalanceFactor).reduce((sum, current) => sum + current, 0)
+      setSupply(tokenSupply)
 
       // Fetch votes of the Voting app
       const votes = await voting.votes()
@@ -469,9 +488,9 @@ export default function Club({ track }) {
   return (
     <ClubWrapper color={activeTrack.primaryColor} >
       <ClubHeading>
-        <ClubBankCard />
-        <MembersCard />
-        <ProfileSection />
+        <ClubBankCard supply={supply} />
+        <MembersCard totalMembers={members.length} />
+        <ProfileSection supply={supply} />
       </ClubHeading>
       <ClubBody>
         {proposals.map((proposal) => {
