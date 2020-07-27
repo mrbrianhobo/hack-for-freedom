@@ -412,7 +412,8 @@ function checkScore() {
       </AutoRow>
 
       {activeSection === Section.Club ? (
-<ButtonPrimary onClick={checkScore} >Enter The Club</ButtonPrimary> 
+      /* <ButtonPrimary onClick={checkScore} >Enter The Club</ButtonPrimary>  */
+       <Club track={activeTrack} />
       ) : (
         <TasksWrapper>
           {allQuestData &&
