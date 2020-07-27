@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react"
 import { connect } from '@aragon/connect'
+import { Voting } from '@aragon/connect-thegraph-voting'
 
 import styled from "styled-components"
 import Row, { AutoRow, RowBetween } from "../../components/Row"
 import { AutoColumn } from "../../components/Column"
 import IconManager from "../../components/IconManager"
 import { Text } from "rebass"
+import { withWeb3 } from "web3-react"
+import { stat } from "fs"
 
 const ClubWrapper = styled.div`
   display: flex;
@@ -92,7 +95,7 @@ const MembersDiv = ({className}) => {
         Active Members
       </Text>
       <div className={className}>
-        <Text>2/2 Members</Text>
+        <Text>2/3 Members</Text>
       </div>
     </div>
 		
@@ -192,7 +195,7 @@ const XPBar = styled.div`
 
 const ContributionDiv = ({ xp }) => {
   // xp / total xp * 150 (width of xp bar)
-  const fillWidth = (xp / 200) * 300
+  const fillWidth = (xp / 300) * 300
   return (
     <div>
       <Text
@@ -210,7 +213,7 @@ const ContributionDiv = ({ xp }) => {
             color: "#fff"
           }}
         >
-          75%
+          50%
         </span>
       </Text>
       <XPBar>
@@ -219,6 +222,63 @@ const ContributionDiv = ({ xp }) => {
     </div>
   )
 }
+
+const VotingBar = styled.div`
+  position: relative;
+  width: 200px;
+  height: 14px;
+  background: #242424;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 50px;
+  margin: 6px;
+`
+
+const YesBar = styled.div`
+  position: absolute;
+  height: 14px;
+  background: rgb(44, 198, 143);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 50px;
+  margin: 0px;
+`
+
+const NoBar = styled.div`
+  position: absolute;
+  height: 14px;
+  background: rgb(255, 105, 105);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 50px;
+  margin: 0px;
+`
+
+const VotingBarDiv = ({className, yes, no, total }) => {
+  const yesWidth = yes / total * 200;
+  const noWidth = no / total * 200;
+  return (
+    <div className={className}>
+      <AutoRow>
+        <Text>{parseInt(yes/total*100)}%</Text>
+        <VotingBar>
+          <YesBar style={{ width: yesWidth }} />
+        </VotingBar>
+      </AutoRow>
+      <AutoRow>
+        <Text>{parseInt(no/total*100)}%</Text>
+        <VotingBar>
+          <NoBar style={{ width: noWidth }} />
+        </VotingBar>
+      </AutoRow>
+    </div>
+  )
+}
+
+const VotingBarSection = styled(VotingBarDiv)`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: -30px;
+`
 
 const ContributionSection = styled(ContributionDiv)`
   display: flex;
@@ -256,9 +316,23 @@ const ProfileSection = styled(ProfileDiv)`
   align-items: center;
 `
 
-const Proposal = ({className, activeTrack, showProposalDetails}) => {
+const ProposalDetailsWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  padding: 40px;
+  background-color: #171717;
+  border-radius: 0 0 10px 10px;
+`
+
+const Proposal = ({className, activeTrack, showProposalDetails, setShowProposalDetails, setActiveProposal, activeProposal, proposal}) => {
   return (
-    <div className={className}>
+    <div 
+      className={className}
+      onClick={() => {
+        setShowProposalDetails(!showProposalDetails)
+        setActiveProposal(proposal.index)
+      }}
+    >
       <Row
           gap="10px"
           style={{
@@ -274,16 +348,16 @@ const Proposal = ({className, activeTrack, showProposalDetails}) => {
           <AutoColumn style={{ width: "100%", marginLeft: "20px" }} gap="10px">
             <RowBetween>
               <Text fontSize={12} color={activeTrack.primaryColor}>
-                Vote #1
-              </Text>
-              <Text fontSize={12} color={activeTrack.primaryColor}>
-                placeholder
+                Vote #{proposal.index}
               </Text>
             </RowBetween>
-            <Text fontSize={16}>This is a test vote</Text>
+          <RowBetween>
+            <Text fontSize={16}>{proposal.description}</Text>
+            <VotingBarSection yes={proposal.yes} no={proposal.no} total={proposal.total} />
+          </RowBetween>
           </AutoColumn>
         </Row>
-        {!showProposalDetails && (
+        {(!showProposalDetails || activeProposal!==proposal.index) && (
           <RowBetween
             style={{
               backgroundColor: "#141414",
@@ -296,7 +370,7 @@ const Proposal = ({className, activeTrack, showProposalDetails}) => {
               fontWeight={800}
               color={activeTrack.primaryColor}
             >
-              [time remaining]
+              {proposal.status ? "Passed" : "Rejected"}
             </Text>
             <Text
               fontWeight={800}
@@ -306,6 +380,25 @@ const Proposal = ({className, activeTrack, showProposalDetails}) => {
               View Proposal
             </Text>
           </RowBetween>
+        )}
+        {showProposalDetails && activeProposal===proposal.index && (
+          <ProposalDetailsWrapper>
+            <AutoColumn gap="40px" width="100%">
+              <AutoColumn gap="20px" justify="flex-start">
+                <AutoColumn gap="10px">
+                  <Text color="#676767">Status: </Text>
+                  <Text fontSize={20} fontWeight={600} color="#D5D5D5">
+                  {proposal.status ? "Passed" : "Rejected"}
+                  </Text>
+                </AutoColumn>
+                <Text color="#676767">Votes Casted</Text>
+                <Text fontSize={16} fontWeight={500} color="#D5D5D5">
+                  Yes: {parseInt(proposal.yes/(parseInt(proposal.yes)+parseInt(proposal.no))*100)}%
+                  No: {parseInt(proposal.no/(parseInt(proposal.yes)+parseInt(proposal.no))*100)}%
+                </Text>
+              </AutoColumn>
+            </AutoColumn>
+          </ProposalDetailsWrapper>
         )}
     </div>
   )
@@ -323,21 +416,55 @@ const ProposalCard = styled(Proposal)`
 `
 
 export default function Club({ track }) {
+  const [activeTrack] = useState(track)
+  const [showModal, setShowModal] = useState(false)
+  const [showProposalDetails, setShowProposalDetails] = useState(false)
+  const [activeProposal, setActiveProposal] = useState(0)
+  const [proposals, setProposals] = useState([])
+
   useEffect(() => {
-    async function test() {
+    async function getDAOData() {
       // Initiates the connection to an organization
       const org = await connect('briantest.aragonid.eth', 'thegraph', { chainId: 4 })
 
       // Fetch the apps belonging to this organization
       const apps = await org.apps()
       apps.forEach(console.log)
+      
+      // Instanciate the Voting app connector using the app address:
+      const voting = new Voting(
+        "0x19048cb2e95f918c297480b5abdc77c262bccf7b",
+        'https://api.thegraph.com/subgraphs/name/aragon/aragon-voting-rinkeby'
+      )
+
+      // Fetch votes of the Voting app
+      const votes = await voting.votes()
+      const proposals = []
+      for (let i = votes.length-1; i > 0; i--) {
+        proposals.push({
+          index: i,
+          status: votes[i].executed,
+          description: votes[i].metadata,
+          yes: votes[i].yea,
+          no: votes[i].nay,
+          total: votes[i].votingPower,
+        })
+      }
+      setProposals(proposals)
+      console.log(voting)
+      console.log(votes)
+      console.log(proposals)
+
+      // const intent = await org.appIntent(voting, 'vote', [votes[0].id, true, true])
+
+      // const [path] = intent.paths("0x7291FcB5EF2bf9770FA031FcB512f126E5809976")
+
+      // for (const transaction of path.transactions) {
+      //   await web3.eth.sendTransaction(transaction)
+      // }
     }
-    test()
+    getDAOData()
 	}, [])
-	
-  const [activeTrack] = useState(track)
-  const [showModal, setShowModal] = useState(false)
-  const [showProposalDetails, setProposalDetails] = useState(false)
 
   return (
     <ClubWrapper color={activeTrack.primaryColor} >
@@ -347,8 +474,18 @@ export default function Club({ track }) {
         <ProfileSection />
       </ClubHeading>
       <ClubBody>
-        <ProposalCard activeTrack={activeTrack} showProposalDetails={showProposalDetails} />
-        <ProposalCard activeTrack={activeTrack} showProposalDetails={showProposalDetails} />
+        {proposals.map((proposal) => {
+          return (
+            <ProposalCard 
+              activeTrack={activeTrack} 
+              showProposalDetails={showProposalDetails}
+              setShowProposalDetails={setShowProposalDetails}
+              setActiveProposal={setActiveProposal}
+              activeProposal={activeProposal}
+              proposal={proposal}
+            />
+        )})}
+        
       </ClubBody>
     </ClubWrapper>
   )
