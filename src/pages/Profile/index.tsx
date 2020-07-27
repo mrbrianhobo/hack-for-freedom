@@ -11,6 +11,24 @@ import { useUserDbData, useAllQuestData } from "../../contexts/Application"
 import { ALL_TRACKS, TrackDefinition } from "../../Tracks"
 import { getQuestsFromTrack, getTotalXpFromTrack } from "../../quests"
 import IconManager from "../../components/IconManager"
+// import { LEVELS, MAX_LEVEL } from "../../constants"
+// import { useScore } from "../../contexts/Application"
+
+// const score = useScore()
+
+// const getLevelFromScore = (score) => {
+//   let currentLvl = 1
+//   const levels = Object.keys(LEVELS)
+//   for (const level of levels) {
+//     if (score >= LEVELS[level]) {
+//       currentLvl = level
+//     }
+//   }
+//   return parseInt(currentLvl)
+// }
+
+
+// const level = score ? getLevelFromScore(score) : null
 
 const PageWrapper = styled.div`
   display: flex;
@@ -103,6 +121,11 @@ export default function ProfilePage() {
   const dbData = useUserDbData()
   const userDbData = dbData?.[overrideAccount ? customUser : account]
 
+
+ 
+  
+
+
   function getTrackProgress(track) {
     let progress = 0
     let trackQuests = getQuestsFromTrack(track.track)
@@ -172,7 +195,7 @@ export default function ProfilePage() {
             <Identicon size={40} />
             <AutoColumn gap="10px" style={{ marginLeft: "40px" }}>
               <Text fontWeight={600} color={"#B8B8B8"} fontSize={24}>
-                Level 4
+                {/* Level {level} */}
               </Text>
               <Text fontWeight={800} fontSize={24}>
                 {customUser ? customUser : ensName ? ensName : account}

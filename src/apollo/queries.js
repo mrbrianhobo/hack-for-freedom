@@ -1,13 +1,23 @@
 import gql from "graphql-tag"
 
 export const COMPOUND_QUERY = gql`
-  query account($user: ID!) {
-    account(id: $user) {
+query account($user: ID!) {
+  account(id: $user) {
+    id
+    countLiquidator
+    hasBorrowed
+    health
+    tokens {
       id
-      totalBorrowValueInEth
-      totalCollateralValueInEth
-    }
+      enteredMarket
+      supplyBalanceUnderlying
+      lifetimeSupplyInterestAccrued
+      lifetimeBorrowInterestAccrued
+    } 
+    totalBorrowValueInEth
+    totalCollateralValueInEth
   }
+}
 `
 
 export const ENS_QUERY = gql`

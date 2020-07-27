@@ -41,6 +41,8 @@ const PageWrapper = styled.div`
   }
 `
 
+
+
 const MenuItem = styled.div`
   padding: 16px 32px;
   background-color: ${({ bg }) => bg};
@@ -138,6 +140,8 @@ enum Section {
   Club,
 }
 
+
+
 function DashboardPage() {
   const { account } = useWeb3React()
 
@@ -171,6 +175,20 @@ function DashboardPage() {
       setTrackScore(newScore)
     }
   }, [quests, allQuestData])
+
+function checkScore() {
+  if (trackScore >= 200) {
+    var message = "welcome to da club"
+    }
+    else {
+     //  const short = 200 - trackScore 
+   var message = "You need more points to unlock the Compound Club. Go back to tasks to complete more challenges!"
+
+  }
+  alert(message);
+    console.log(message);
+    return message
+}
 
   // update to done in db and mark as unredeemable locally
   function redeemPoints(questId: string) {
@@ -225,7 +243,7 @@ function DashboardPage() {
               </Text>
               <Text fontSize={12} color={activeTrack.primaryColor}>
                 {step === stepCount && !allQuestData[quest.id]?.redeemable
-                  ? "Category Completed"
+                  ? "Category Completed | Go To Club"
                   : `Step ${step} of ${stepCount}`}
               </Text>
             </RowBetween>
@@ -381,11 +399,12 @@ function DashboardPage() {
             Task Overview
           </Text>
         </Hover>
-        <Hover>
+        <Hover >
           <Text
             fontWeight={800}
             color={activeSection === Section.Club ? "white" : "#727272"}
             onClick={() => setActiveSection(Section.Club)}
+            // 
           >
             Club
           </Text>
@@ -393,8 +412,8 @@ function DashboardPage() {
       </AutoRow>
 
       {activeSection === Section.Club ? (
-        <Club />
-        // <Leaderboard track={activeTrack} />
+      /* <ButtonPrimary onClick={checkScore} >Enter The Club</ButtonPrimary>  */
+       <Club track={activeTrack} />
       ) : (
         <TasksWrapper>
           {allQuestData &&
@@ -410,6 +429,7 @@ function DashboardPage() {
                   allQuestData[questId]?.redeemable
                 ) {
                   foundLatest = true
+                  // Need to add what to display if there are no more valid quests
                 } else {
                   liveIndex = liveIndex + 1
                 }
