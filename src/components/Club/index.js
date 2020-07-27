@@ -60,10 +60,10 @@ const ClubBankDiv = ({className, supply}) => {
           color: "#727272"
         }}
       >
-        Club Total XP
+        Club Bank Value
       </Text>
       <div className={className}>
-        <Text>{supply} XP</Text>
+        <Text>$732 USD</Text>
       </div>
     </div>
 		
@@ -353,7 +353,7 @@ const Proposal = ({className, activeTrack, showProposalDetails, setShowProposalD
               </Text>
             </RowBetween>
           <RowBetween>
-            <Text fontSize={16}>{proposal.description}</Text>
+            <Text fontSize={16}>{proposal.description.length > 0 ? proposal.description : "Token Minting Event"}</Text>
             <VotingBarSection yes={proposal.yes} no={proposal.no} total={proposal.total} />
           </RowBetween>
           </AutoColumn>
@@ -459,7 +459,7 @@ export default function Club({ track }) {
       // Fetch votes of the Voting app
       const votes = await voting.votes()
       const proposals = []
-      for (let i = votes.length-1; i > 0; i--) {
+      for (let i = votes.length-1; i >= 0; i--) {
         proposals.push({
           index: i,
           status: votes[i].executed,
