@@ -9,14 +9,6 @@ export const SUPPORTED_WALLETS = {
     description: "Injected web3 provider.",
     color: "#010101",
   },
-  METAMASK: {
-    connector: injected,
-    id: "MetaMask",
-    name: "MetaMask",
-    iconName: "metamask.png",
-    description: "Easy-to-use browser extension.",
-    color: "#E8831D",
-  },
   WALLET_CONNECT: {
     connector: walletconnect,
     id: "WalletConnect",
