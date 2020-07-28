@@ -431,8 +431,8 @@ const Proposal = ({className, activeTrack, showProposalDetails, setShowProposalD
                 </AutoColumn>
                 <Text color="#676767">Votes Casted</Text>
                 <Text fontSize={16} fontWeight={500} color="#D5D5D5">
-                  Yes: {parseInt(proposal.yes/(parseInt(proposal.yes)+parseInt(proposal.no))*100)}%
-                  No: {parseInt(proposal.no/(parseInt(proposal.yes)+parseInt(proposal.no))*100)}%
+                  Yes: {(parseInt(proposal.yes)+parseInt(proposal.no) > 0 ? parseInt(proposal.yes/(parseInt(proposal.yes)+parseInt(proposal.no))*100) : 0)}%
+                  No: {(parseInt(proposal.yes)+parseInt(proposal.no) > 0 ? parseInt(proposal.no/(parseInt(proposal.yes)+parseInt(proposal.no))*100) : 0)}%
                 </Text>
               </AutoColumn>
             </AutoColumn>
@@ -554,6 +554,48 @@ export default function Club({ track }) {
         )}))
         : null
       }
+      {activeSection === "Members" ? (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-around",
+            width: "80%",
+            marginBottom: "4px"
+          }}
+        >
+          <Text
+            style={{
+              width: "10%"
+            }}
+          >
+          </Text>
+          <Text
+            style={{
+              width: "30%"
+            }}
+            color={"#2B5944"}
+          >Address</Text>
+          <Text
+            style={{
+              width: "29%"
+            }}
+          >
+          </Text>
+          <Text
+            style={{
+              width: "20%"
+            }}
+            color={"#2B5944"}
+          >Score</Text>
+          <Text
+            style={{
+              width: "14.5%"
+            }}
+            color={"#2B5944"}
+          >Contribution</Text>
+        </div>
+      ) : null }
       {activeSection === "Members" ? (
         members.map((member, i) => {
           return (
