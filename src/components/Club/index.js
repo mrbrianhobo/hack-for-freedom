@@ -346,11 +346,13 @@ const MemberRow = styled(MemberRowDiv)`
   alighn-items: center;
   justify-content: space-around;
   width: 80%;
-  background-color: #171717;
+  background-color: ${({ even }) => (even ? "#242424" : "#171717")};
   padding: 20px
-  margin: 8px;
-  border-radius: 10px;
+  // margin: 8px;
+  border-radius: ${({ first, last }) => (first ? "10px 10px 0 0" : (last ? "0 0 10px 10px" : "0px"))};
 `
+
+// const BankRowDiv
 
 const ProposalDetailsWrapper = styled.div`
   display: flex;
@@ -553,12 +555,15 @@ export default function Club({ track }) {
         : null
       }
       {activeSection === "Members" ? (
-        members.map((member) => {
+        members.map((member, i) => {
           return (
             <MemberRow 
               address={member.address}
               score={parseInt(member.balance)/tokenBalanceFactor}
               total={supply}
+              first={i===0}
+              last={i===members.length-1}
+              even={i%2===0}
             />
           )
         })
